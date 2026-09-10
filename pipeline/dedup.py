@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import json
 import logging
+import re
 from dataclasses import dataclass
 from datetime import timedelta
 from pathlib import Path
@@ -43,13 +44,33 @@ def _entity_set(entities: dict) -> set[str]:
     return out
 
 
+def _tokens(s: str) -> set[str]:
+    return {t for t in re.split(r"[^a-z0-9]+", s) if len(t) >= 3}
+
+
+def entities_overlap(a: set[str], b: set[str]) -> bool:
+    """Fuzzy: exact match, substring (>=4 chars), or a shared token.
+    Errs loose on purpose — a false candidate just goes to the dedup LLM,
+    while a missed candidate splits one event in two ("Jazan" must match
+    "Jazan refinery")."""
+    if a & b:
+        return True
+    for x in a:
+        for y in b:
+            if (len(x) >= 4 and x in y) or (len(y) >= 4 and y in x):
+                return True
+            if _tokens(x) & _tokens(y):
+                return True
+    return False
+
+
 def filter_candidates(open_events: list[dict], cls: Classification) -> list[dict]:
     """Same category OR overlapping entities; input is already newest-first."""
     post_entities = _entity_set(cls.entities)
     picked = []
     for ev in open_events:
         ev_entities = _entity_set(json.loads(ev["entities"]) if isinstance(ev["entities"], str) else ev["entities"])
-        if ev["category"] == cls.category or (post_entities and post_entities & ev_entities):
+        if ev["category"] == cls.category or (post_entities and entities_overlap(post_entities, ev_entities)):
             picked.append(ev)
         if len(picked) >= MAX_CANDIDATES:
             break

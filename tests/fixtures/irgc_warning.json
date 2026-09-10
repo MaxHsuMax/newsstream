@@ -13,7 +13,7 @@
       "quoted_text": null,
       "is_reply": false,
       "posted_at": "2026-09-08T09:14:00+00:00",
-      "expect": {"surfaced": true, "dedup": "NEW_EVENT", "category_in": ["OFFICIAL_STATEMENT", "CHOKEPOINT_STATUS", "SHIPPING_INCIDENT"]}
+      "expect": {"surfaced": true, "dedup": "NEW_EVENT", "category_in": ["OFFICIAL_STATEMENT", "CHOKEPOINT_STATUS", "SHIPPING_INCIDENT", "STRIKE_MILITARY"]}
     },
     {
       "source": "x",
@@ -26,7 +26,7 @@
       "quoted_text": null,
       "is_reply": false,
       "posted_at": "2026-09-08T11:30:00+00:00",
-      "expect": {"surfaced": true, "dedup": "DUPLICATE", "category_in": ["OFFICIAL_STATEMENT", "CHOKEPOINT_STATUS", "SHIPPING_INCIDENT"]}
+      "expect": {"surfaced": true, "dedup": "DUPLICATE", "category_in": ["OFFICIAL_STATEMENT", "CHOKEPOINT_STATUS", "SHIPPING_INCIDENT", "STRIKE_MILITARY"]}
     }
   ]
 }

@@ -18,6 +18,7 @@ from datetime import timedelta
 from pathlib import Path
 
 import pytest
+from dotenv import load_dotenv
 
 from newsstream.adapters.base import NormalizedPost
 from newsstream.config import ROOT, load_settings
@@ -27,6 +28,7 @@ from newsstream.pipeline.llm import Cassette, LLMClient, LLMParseError, LLMUnava
 FIXTURES_DIR = Path(__file__).parent / "fixtures"
 CASSETTE_PATH = Path(__file__).parent / "cassettes" / "llm.json"
 
+load_dotenv(ROOT / ".env")  # so a plain `uv run pytest` can record cassettes
 HAVE_KEY = bool(os.environ.get("ANTHROPIC_API_KEY"))
 HAVE_CASSETTE = CASSETTE_PATH.exists()
 

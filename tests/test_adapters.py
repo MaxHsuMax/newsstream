@@ -10,7 +10,9 @@ import httpx
 
 from newsstream.adapters.telegram import bare_chat_id, bot_update_to_post, message_to_post
 from newsstream.adapters.x_api import XApiAdapter, parse_timeline
-from newsstream.adapters.x_push import RULE_VALUE_MAX, build_rule_values, parse_ws_message
+from newsstream.adapters.x_push import (
+    RULE_VALUE_MAX, XPushAdapter, build_rule_values, parse_ws_message,
+)
 from newsstream.pipeline.normalize import normalize
 
 from .conftest import load_fixture
@@ -150,6 +152,40 @@ def test_x_push_fast_tweet_lane_and_handle_filter():
     # ...and reply-typed fast tweets are dropped
     fast["tweet"].update(screen_name="TankerTrackers", type="reply")
     assert parse_ws_message(fast, ALLOWED, received_at=NOW) == []
+
+
+def _rules_transport(settings, calls, existing_rules):
+    def handler(request):
+        calls.append((request.method, request.url.path))
+        if request.url.path == "/oapi/tweet_filter/get_rules":
+            return httpx.Response(200, json={"status": "success", "rules": existing_rules})
+        return httpx.Response(200, json={"status": "success", "msg": "ok", "rule_id": "r1"})
+    return httpx.AsyncClient(transport=httpx.MockTransport(handler),
+                             base_url="https://api.twitterapi.io")
+
+
+async def test_sync_never_updates_an_active_up_to_date_rule(settings, repo):
+    # Regression: the vendor rejects update_rule on active rules; calling it
+    # unconditionally crash-looped every reconnect (live incident 2026-09-10).
+    handles = [a.handle for a in settings.accounts if a.source == "x"]
+    value = build_rule_values(handles)[0]
+    calls = []
+    existing = [{"rule_id": "r1", "tag": "newsstream-0", "value": value,
+                 "interval_seconds": settings.x_push_interval, "is_effect": 1}]
+    async with _rules_transport(settings, calls, existing) as rest:
+        await XPushAdapter(settings, repo)._sync_rules(rest, handles)
+    assert calls == [("GET", "/oapi/tweet_filter/get_rules")]
+
+
+async def test_sync_activates_inactive_rule(settings, repo):
+    handles = [a.handle for a in settings.accounts if a.source == "x"]
+    value = build_rule_values(handles)[0]
+    calls = []
+    existing = [{"rule_id": "r1", "tag": "newsstream-0", "value": value,
+                 "interval_seconds": settings.x_push_interval, "is_effect": 0}]
+    async with _rules_transport(settings, calls, existing) as rest:
+        await XPushAdapter(settings, repo)._sync_rules(rest, handles)
+    assert ("POST", "/oapi/tweet_filter/update_rule") in calls
 
 
 def test_x_push_rule_values_chunked_under_limit():

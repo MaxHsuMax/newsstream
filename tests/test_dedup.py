@@ -48,6 +48,16 @@ def test_candidates_capped_at_eight():
     assert len(D.filter_candidates(events, _cls())) == 8
 
 
+def test_entity_overlap_is_fuzzy():
+    # "Jazan" must match an event holding "Jazan refinery" (substring/token),
+    # or a confirmation post never reaches the dedup LLM at all.
+    events = [_event(1, category="STRIKE_MILITARY", locations=["Jazan refinery"])]
+    cls = _cls(category="OFFICIAL_STATEMENT", locations=["Jazan"])
+    assert [e["id"] for e in D.filter_candidates(events, cls)] == [1]
+    assert D.entities_overlap({"saudi aramco"}, {"saudi energy ministry"})  # shared token
+    assert not D.entities_overlap({"us"}, {"houthis"})  # no short-substring false positive
+
+
 async def test_no_candidates_is_new_event_without_llm(settings):
     llm = StubLLM()
     post, _ = load_fixture("kharg_strikes")[0]

@@ -39,7 +39,7 @@ from __future__ import annotations
 import asyncio
 import json
 import logging
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta
 
 import httpx
 
@@ -53,6 +53,7 @@ REST_BASE = "https://api.twitterapi.io"
 RULE_VALUE_MAX = 255
 RECONNECT_WAIT_S = 90  # vendor requirement: let the server release the slot
 LEGACY_TIME_FMT = "%a %b %d %H:%M:%S %z %Y"  # "Sat Mar 15 05:31:28 +0000 2025"
+BACKFILL_WINDOW_H = 3  # only recover posts this recent on (re)connect
 
 
 def build_rule_values(handles: list[str]) -> list[str]:
@@ -189,6 +190,13 @@ class XPushAdapter(SourceAdapter):
                 if body.get("status") != "success":
                     raise RuntimeError(f"add_rule failed: {body.get('msg')}")
                 rule_id = body["rule_id"]
+            elif (existing.get("value") == value
+                  and float(existing.get("interval_seconds") or 0) == float(interval)
+                  and existing.get("is_effect") == 1):
+                # Nothing to change. Never touch an active up-to-date rule:
+                # the vendor rejects update_rule on active rules ("update rule
+                # failed"), which crash-looped every reconnect on 2026-09-10.
+                continue
             else:
                 rule_id = existing["rule_id"]
             # New rules start inactive; update_rule also activates (is_effect=1).
@@ -231,27 +239,32 @@ class XPushAdapter(SourceAdapter):
                         await asyncio.sleep(RECONNECT_WAIT_S)
                     first = False
                     async with self._rest() as rest:
-                        await self._sync_rules(rest, handles)
-                    async with websockets.connect(
-                        s.x_push_url,
-                        additional_headers={"x-api-key": s.x_push_api_key},
-                        ping_interval=40, ping_timeout=30,
-                    ) as ws:
-                        self.status.state = "live"
-                        self.status.detail = f"twitterapi.io, {len(handles)} account(s)"
-                        log.info("x_push live (%s)", s.x_push_url)
-                        async for raw in ws:
+                        try:
+                            await self._sync_rules(rest, handles)
+                        except Exception as e:
+                            # Rules from a previous run are usually still armed;
+                            # a sync hiccup must not block streaming.
+                            log.error("x_push rule sync failed (%s); streaming with "
+                                      "existing vendor-side rules", e)
+                        async with websockets.connect(
+                            s.x_push_url,
+                            additional_headers={"x-api-key": s.x_push_api_key},
+                            ping_interval=40, ping_timeout=30,
+                        ) as ws:
+                            self.status.state = "live"
+                            self.status.detail = f"twitterapi.io, {len(handles)} account(s)"
+                            log.info("x_push live (%s)", s.x_push_url)
                             try:
-                                posts = parse_ws_message(json.loads(raw), allowed)
-                            except (json.JSONDecodeError, KeyError, TypeError) as e:
-                                log.warning("x_push unparseable message: %s", e)
-                                continue
-                            for post in posts:
-                                post.tier = s.tier_for_handle(post.account_handle)
-                                if self.repo:
-                                    await self.repo.upsert_account(
-                                        "x", post.account_id, post.account_handle, post.tier)
-                                await sink(post)
+                                await self._backfill(rest, handles, allowed, sink)
+                            except Exception as e:
+                                log.warning("x_push backfill failed: %s", e)
+                            async for raw in ws:
+                                try:
+                                    posts = parse_ws_message(json.loads(raw), allowed)
+                                except (json.JSONDecodeError, KeyError, TypeError) as e:
+                                    log.warning("x_push unparseable message: %s", e)
+                                    continue
+                                await self._emit(posts, sink)
                 except asyncio.CancelledError:
                     raise
                 except Exception as e:
@@ -261,6 +274,38 @@ class XPushAdapter(SourceAdapter):
         except asyncio.CancelledError:
             await self._deactivate_rules()
             raise
+
+    async def _emit(self, posts: list[NormalizedPost], sink: Sink) -> None:
+        for post in posts:
+            post.tier = self.settings.tier_for_handle(post.account_handle)
+            if self.repo:
+                await self.repo.upsert_account(
+                    "x", post.account_id, post.account_handle, post.tier)
+            await sink(post)
+
+    async def _backfill(self, rest: httpx.AsyncClient, handles: list[str],
+                        allowed: set[str], sink: Sink) -> None:
+        """Fetch each account's recent posts over REST after (re)connecting.
+        The WebSocket has no replay, so posts published while disconnected
+        would otherwise be lost (happened live 2026-09-10: a 25-min reconnect
+        loop silently dropped a post). Downstream dedup skips already-seen ids;
+        the window keeps a cold start from flooding the queue with old posts
+        (last_tweets returns ~20/account regardless of age)."""
+        cutoff = datetime.now(UTC) - timedelta(hours=BACKFILL_WINDOW_H)
+        pushed = 0
+        for handle in handles:
+            r = await self._call(rest, "GET", "/twitter/user/last_tweets",
+                                 params={"userName": handle})
+            if r.status_code != 200:
+                log.warning("x_push backfill: last_tweets %s -> %d", handle, r.status_code)
+                continue
+            body = r.json()
+            tweets = body.get("tweets") or (body.get("data") or {}).get("tweets") or []
+            posts = parse_ws_message({"event_type": "tweet", "tweets": tweets}, allowed)
+            recent = [p for p in posts if p.posted_at >= cutoff]
+            await self._emit(recent, sink)
+            pushed += len(recent)
+        log.info("x_push backfill: %d recent post(s) pushed (dedup drops the already-seen)", pushed)
 
     async def _deactivate_rules(self) -> None:
         """Best-effort on shutdown: matched tweets bill even with no listener
