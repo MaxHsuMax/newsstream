@@ -2,7 +2,7 @@
 
 markets:
   crude_oil:
-    threshold: 70            # materiality_score >= threshold gets dedup'd + surfaced
+    threshold: 60            # materiality_score >= threshold gets dedup'd + surfaced
     review_band: 8           # triage score within +/- this of threshold -> re-run on review model
     rubric_weights:
       event_not_commentary: 3.0
