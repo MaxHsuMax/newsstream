@@ -1,0 +1,32 @@
+{
+  "event": "irgc_warning",
+  "description": "Sep 8 2026: IRGC Navy warns tanker crews near Kuwaiti and Bahraini ports to evacuate",
+  "posts": [
+    {
+      "source": "x",
+      "source_post_id": "9004000001",
+      "account_id": "1400000001",
+      "account_handle": "FaytuksNetwork",
+      "tier": "osint",
+      "url": "https://x.com/FaytuksNetwork/status/9004000001",
+      "text": "BREAKING: IRGC Navy issues an \"immediate warning\" to oil tanker crews in the vicinity of ports in Kuwait and Bahrain to abandon their vessels, threatening to target tankers there in response to US strikes on Iranian tankers. Broadcast going out on maritime channels now.",
+      "quoted_text": null,
+      "is_reply": false,
+      "posted_at": "2026-09-08T09:14:00+00:00",
+      "expect": {"surfaced": true, "dedup": "NEW_EVENT", "category_in": ["OFFICIAL_STATEMENT", "CHOKEPOINT_STATUS", "SHIPPING_INCIDENT"]}
+    },
+    {
+      "source": "x",
+      "source_post_id": "9004000002",
+      "account_id": "1400000002",
+      "account_handle": "HormuzLetter",
+      "tier": "osint",
+      "url": "https://x.com/HormuzLetter/status/9004000002",
+      "text": "Wire services now carrying the IRGC Navy warning to tanker crews at Kuwaiti and Bahraini ports to evacuate their vessels, citing \"hostile actions\" of the US military in targeting Iranian tankers.",
+      "quoted_text": null,
+      "is_reply": false,
+      "posted_at": "2026-09-08T11:30:00+00:00",
+      "expect": {"surfaced": true, "dedup": "DUPLICATE", "category_in": ["OFFICIAL_STATEMENT", "CHOKEPOINT_STATUS", "SHIPPING_INCIDENT"]}
+    }
+  ]
+}

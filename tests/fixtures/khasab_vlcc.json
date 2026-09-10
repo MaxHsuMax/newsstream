@@ -1,0 +1,71 @@
+{
+  "event": "khasab_vlcc",
+  "description": "Aug 31 2026: VLCCs Sidr and Senegal Prosperity struck by projectiles off Khasab, Strait of Hormuz",
+  "posts": [
+    {
+      "source": "x",
+      "source_post_id": "9001000001",
+      "account_id": "89234502",
+      "account_handle": "TankerTrackers",
+      "tier": "tracker",
+      "url": "https://x.com/TankerTrackers/status/9001000001",
+      "text": "BREAKING: Saudi VLCC SIDR struck by projectiles 16.6nm NE of Khasab while exiting the Strait of Hormuz, laden. Minutes later the Liberian-flagged VLCC SENEGAL PROSPERITY was hit by three projectiles 17nm E of Khasab. AIS shows SENEGAL PROSPERITY dead in the water, listing to port.",
+      "quoted_text": null,
+      "is_reply": false,
+      "posted_at": "2026-08-31T05:41:00+00:00",
+      "expect": {"surfaced": true, "dedup": "NEW_EVENT", "category_in": ["SHIPPING_INCIDENT", "STRIKE_MILITARY"]}
+    },
+    {
+      "source": "x",
+      "source_post_id": "9001000002",
+      "account_id": "1400000005",
+      "account_handle": "Osint613",
+      "tier": "osint",
+      "url": "https://x.com/Osint613/status/9001000002",
+      "text": "Reuters flash: Two supertankers carrying Saudi oil, the SIDR and the SENEGAL PROSPERITY, attacked by projectiles near Khasab at the mouth of the Strait of Hormuz this morning. One vessel disabled and listing. Crews reported safe.",
+      "quoted_text": null,
+      "is_reply": false,
+      "posted_at": "2026-08-31T09:58:00+00:00",
+      "expect": {"surfaced": true, "dedup": "DUPLICATE", "category_in": ["SHIPPING_INCIDENT", "STRIKE_MILITARY"]}
+    },
+    {
+      "source": "x",
+      "source_post_id": "9001000003",
+      "account_id": "717836935",
+      "account_handle": "UK_MTO",
+      "tier": "official",
+      "url": "https://x.com/UK_MTO/status/9001000003",
+      "text": "INCIDENT UPDATE 031-26: Vessel SENEGAL PROSPERITY struck port side, engine room and ballast tank, 17NM east of Khasab, Oman. Vessel is NOT under command and at anchor near the Omani coast. Crew evacuated by local authorities, all accounted for. Vessels in vicinity advised to exercise caution.",
+      "quoted_text": null,
+      "is_reply": false,
+      "posted_at": "2026-08-31T12:24:00+00:00",
+      "expect": {"surfaced": true, "dedup": "UPDATE", "category_in": ["SHIPPING_INCIDENT", "OFFICIAL_STATEMENT", "CHOKEPOINT_STATUS"]}
+    },
+    {
+      "source": "x",
+      "source_post_id": "9001000004",
+      "account_id": "1400000003",
+      "account_handle": "MoloWarMonitor",
+      "tier": "osint",
+      "url": "https://x.com/MoloWarMonitor/status/9001000004",
+      "text": "Iran's mission to the UN denies any involvement in today's strikes on the SIDR and SENEGAL PROSPERITY off Khasab, calling reports \"fabrications designed to justify aggression.\" IRGC-linked Tasnim carries the same denial.",
+      "quoted_text": null,
+      "is_reply": false,
+      "posted_at": "2026-08-31T16:47:00+00:00",
+      "expect": {"surfaced": true, "dedup": "UPDATE", "category_in": ["OFFICIAL_STATEMENT", "DIPLOMACY", "SHIPPING_INCIDENT"]}
+    },
+    {
+      "source": "x",
+      "source_post_id": "9001000005",
+      "account_id": "1400000006",
+      "account_handle": "GavMcCracken",
+      "tier": "osint",
+      "url": "https://x.com/GavMcCracken/status/9001000005",
+      "text": "Zoom out: the last six IRGC vessel attacks between Aug 20-31 form the most intense sustained pressure on Hormuz commercial traffic since the 80s tanker wars. Thread on what history says about insurance rates and rerouting decisions in week two of a tanker-war regime. 1/14",
+      "quoted_text": null,
+      "is_reply": false,
+      "posted_at": "2026-08-31T19:03:00+00:00",
+      "expect": {"surfaced": false, "dedup": null, "max_score": 49, "category_in": ["OTHER", "SHIPPING_INCIDENT", "CHOKEPOINT_STATUS"]}
+    }
+  ]
+}

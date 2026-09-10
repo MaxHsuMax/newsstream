@@ -1,0 +1,45 @@
+{
+  "event": "noise",
+  "description": "Analysis, recaps and engagement posts that must score < 50 and never surface",
+  "posts": [
+    {
+      "source": "x",
+      "source_post_id": "9005000001",
+      "account_id": "1400000006",
+      "account_handle": "GavMcCracken",
+      "tier": "osint",
+      "url": "https://x.com/GavMcCracken/status/9005000001",
+      "text": "Ten charts on crude positioning going into next week. CTAs are max long, dealers short gamma above 96, and the curve is screaming backwardation fatigue. My take on what breaks first, thread. 1/11",
+      "quoted_text": null,
+      "is_reply": false,
+      "posted_at": "2026-09-06T08:00:00+00:00",
+      "expect": {"surfaced": false, "dedup": null, "max_score": 49, "category_in": ["OTHER", "SUPPLY_DATA"]}
+    },
+    {
+      "source": "x",
+      "source_post_id": "9005000002",
+      "account_id": "1400000003",
+      "account_handle": "MoloWarMonitor",
+      "tier": "osint",
+      "url": "https://x.com/MoloWarMonitor/status/9005000002",
+      "text": "Week in review: everything that happened in the Gulf this week in one thread - the strikes, the warnings, the denials, and what to watch next week. Grab a coffee, it's a long one. Retweet to help others catch up.",
+      "quoted_text": null,
+      "is_reply": false,
+      "posted_at": "2026-09-06T18:30:00+00:00",
+      "expect": {"surfaced": false, "dedup": null, "max_score": 49, "category_in": ["OTHER"]}
+    },
+    {
+      "source": "x",
+      "source_post_id": "9005000003",
+      "account_id": "1400000005",
+      "account_handle": "Osint613",
+      "tier": "osint",
+      "url": "https://x.com/Osint613/status/9005000003",
+      "text": "POV: you went to sleep for eight hours during a tanker war. Good morning to everyone except my sleep schedule.",
+      "quoted_text": null,
+      "is_reply": false,
+      "posted_at": "2026-09-07T05:45:00+00:00",
+      "expect": {"surfaced": false, "dedup": null, "max_score": 49, "category_in": ["OTHER"]}
+    }
+  ]
+}

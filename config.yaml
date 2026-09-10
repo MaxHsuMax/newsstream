@@ -1,0 +1,76 @@
+# Newsstream user-editable configuration. Secrets live in .env, never here.
+
+markets:
+  crude_oil:
+    threshold: 70            # materiality_score >= threshold gets dedup'd + surfaced
+    review_band: 8           # triage score within +/- this of threshold -> re-run on review model
+    rubric_weights:
+      event_not_commentary: 3.0
+      flow_impact: 3.0
+      primary_source: 1.5
+      specificity: 1.5
+      novelty_prior: 1.0
+
+# Seed list (CLAUDE.md §5). Handles are resolved to stable numeric IDs at first
+# run and stored in the DB; the handle here is display/bootstrap only.
+accounts:
+  - handle: FaytuksNetwork
+    source: x
+    tier: osint
+  - handle: HormuzLetter
+    source: x
+    tier: osint
+  - handle: MoloWarMonitor
+    source: x
+    tier: osint
+  - handle: TankerTrackers
+    source: x
+    tier: tracker
+  - handle: Osint613
+    source: x
+    tier: osint
+  - handle: GavMcCracken
+    source: x
+    tier: osint
+  - handle: UK_MTO
+    source: x
+    tier: official
+  - handle: MenchOsint
+    source: x
+    tier: osint
+
+# OPEN (CLAUDE.md §14): the user supplies the Telegram channel usernames that
+# mirror the seed accounts. Entries may be a bare username string (tier
+# defaults to osint) or {channel: name, tier: official|tracker|osint}.
+telegram_channels: []
+#  - channel: faytuks
+#    tier: osint
+
+# DECIDED 2026-09-10 (was OPEN, §14): Telegram + TwitterAPI.io push are the
+# default sources; the official X API stays available as a budget-capped
+# fallback. Running push and polling together is safe - posts dedup by id.
+
+x_push:
+  enabled: true              # TwitterAPI.io push feed: set X_PUSH_API_KEY in .env (~$0.15/1k posts delivered)
+  url: wss://ws.twitterapi.io/twitter/tweet/websocket
+  rule_tag: newsstream       # tag prefix for the vendor-side filter rules this app manages
+  interval_seconds: 10       # vendor-side check cadence (0.05-86400); this is your X latency floor
+
+x_api:
+  enabled: false             # official X API FALLBACK: flip on (with X_BEARER_TOKEN) if the push vendor has an outage
+  poll_interval_seconds: 60
+  daily_read_budget: 5000    # hard stop; adapter pauses + UI banner when hit (~$25/day at $0.005/read)
+
+ui:
+  max_stacked: 5
+  stale_after_hours: 24
+
+server:
+  host: 127.0.0.1
+  port: 8000
+  db_path: ./data/newsstream.db
+
+# Optional per-model price overrides (USD per 1M tokens) for the footer spend
+# estimate; defaults for current models ship in config.py.
+# llm_prices:
+#   claude-haiku-4-5: {input: 1.00, output: 5.00}

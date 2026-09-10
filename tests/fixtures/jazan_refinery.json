@@ -1,0 +1,45 @@
+{
+  "event": "jazan_refinery",
+  "description": "Sep 8 2026: Houthi drone/missile attack on Aramco's Jazan refinery and Abha distribution centre",
+  "posts": [
+    {
+      "source": "x",
+      "source_post_id": "9003000001",
+      "account_id": "1400000008",
+      "account_handle": "MenchOsint",
+      "tier": "osint",
+      "url": "https://x.com/MenchOsint/status/9003000001",
+      "text": "Large fire visible at Saudi Aramco's Jazan refinery after a reported Houthi drone and missile barrage. Separate white smoke column from an oil distribution centre in Abha. Saudi air defenses active over Khamis Mushait airbase as well. Dozens of drones reported in this wave.",
+      "quoted_text": null,
+      "is_reply": false,
+      "posted_at": "2026-09-08T02:12:00+00:00",
+      "expect": {"surfaced": true, "dedup": "NEW_EVENT", "category_in": ["INFRASTRUCTURE", "STRIKE_MILITARY"]}
+    },
+    {
+      "source": "x",
+      "source_post_id": "9003000002",
+      "account_id": "1400000005",
+      "account_handle": "Osint613",
+      "tier": "osint",
+      "url": "https://x.com/Osint613/status/9003000002",
+      "text": "Reuters: Houthis attacked energy facilities and civilian infrastructure across southern Saudi Arabia with dozens of drones and missiles overnight, striking Aramco assets in Jazan, Abha and Najran. NASA FIRMS satellite data shows a thick smoke cloud over the Jazan refinery.",
+      "quoted_text": null,
+      "is_reply": false,
+      "posted_at": "2026-09-08T06:40:00+00:00",
+      "expect": {"surfaced": true, "dedup": "DUPLICATE", "category_in": ["INFRASTRUCTURE", "STRIKE_MILITARY"]}
+    },
+    {
+      "source": "x",
+      "source_post_id": "9003000003",
+      "account_id": "1400000003",
+      "account_handle": "MoloWarMonitor",
+      "tier": "osint",
+      "url": "https://x.com/MoloWarMonitor/status/9003000003",
+      "text": "Saudi energy ministry statement: the attack on Jazan caused a fire in a crude processing unit which has been brought under control; no casualties. Refinery output \"partially reduced\" while damage is assessed. First official confirmation of unit-level damage.",
+      "quoted_text": null,
+      "is_reply": false,
+      "posted_at": "2026-09-08T10:05:00+00:00",
+      "expect": {"surfaced": true, "dedup": "UPDATE", "category_in": ["INFRASTRUCTURE", "OFFICIAL_STATEMENT", "SUPPLY_DATA"]}
+    }
+  ]
+}

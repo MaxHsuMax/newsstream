@@ -1,0 +1,42 @@
+[project]
+name = "newsstream"
+version = "0.1.0"
+description = "Agentic financial news monitor: watches OSINT accounts, classifies materiality for crude oil, surfaces events in seconds"
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi>=0.115",
+    "uvicorn>=0.30",
+    "aiosqlite>=0.20",
+    "anthropic>=1.0",
+    "pyyaml>=6.0",
+    "python-dotenv>=1.0",
+    "httpx>=0.27",
+    "websockets>=12.0",
+    "telethon>=1.36",
+]
+
+[project.scripts]
+newsstream = "newsstream.app:main"
+
+[dependency-groups]
+dev = [
+    "pytest>=8.0",
+    "pytest-asyncio>=0.24",
+]
+
+[build-system]
+requires = ["setuptools>=69"]
+build-backend = "setuptools.build_meta"
+
+# The repo root IS the `newsstream` package (see CLAUDE.md §3 directory layout),
+# so map the package name onto "." and list subpackages explicitly.
+[tool.setuptools]
+package-dir = {"newsstream" = "."}
+packages = ["newsstream", "newsstream.adapters", "newsstream.pipeline", "newsstream.db"]
+
+[tool.setuptools.package-data]
+newsstream = ["static/*.html", "db/schema.sql", "pipeline/prompts/*.md", "config.yaml"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]

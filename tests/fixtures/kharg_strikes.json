@@ -1,0 +1,84 @@
+{
+  "event": "kharg_strikes",
+  "description": "Sep 5 2026: US strikes on Iranian tankers - M/T Downy off Kharg Island, M/T Stark 1 near Jask, M/T Kylo in the Gulf of Oman",
+  "posts": [
+    {
+      "source": "x",
+      "source_post_id": "9002000001",
+      "account_id": "1400000001",
+      "account_handle": "FaytuksNetwork",
+      "tier": "osint",
+      "url": "https://x.com/FaytuksNetwork/status/9002000001",
+      "text": "BREAKING: Multiple explosions reported on an Iranian oil tanker directly off Kharg Island. US aircraft observed in the area minutes earlier. This would be the first strike at Iran's main crude export terminal.",
+      "quoted_text": null,
+      "is_reply": false,
+      "posted_at": "2026-09-05T13:02:00+00:00",
+      "expect": {"surfaced": true, "dedup": "NEW_EVENT", "category_in": ["STRIKE_MILITARY"]}
+    },
+    {
+      "source": "x",
+      "source_post_id": "9002000002",
+      "account_id": "89234502",
+      "account_handle": "TankerTrackers",
+      "tier": "tracker",
+      "url": "https://x.com/TankerTrackers/status/9002000002",
+      "text": "We can now identify the tanker hit off Kharg Island as the NITC-linked M/T DOWNY (laden). Satellite AIS shows her static with a heat signature. Separately the M/T STARK 1 was struck near Jask. This follows the SINOPA and HAWK a few days ago off Jask.",
+      "quoted_text": null,
+      "is_reply": false,
+      "posted_at": "2026-09-05T13:38:00+00:00",
+      "expect": {"surfaced": true, "dedup": "UPDATE", "category_in": ["STRIKE_MILITARY", "SHIPPING_INCIDENT"]}
+    },
+    {
+      "source": "x",
+      "source_post_id": "9002000003",
+      "account_id": "1400000005",
+      "account_handle": "Osint613",
+      "tier": "osint",
+      "url": "https://x.com/Osint613/status/9002000003",
+      "text": "Confirmed by CENTCOM.",
+      "quoted_text": "US Central Command statement: US forces permanently disabled the M/T DOWNY off Kharg Island and M/T STARK 1 near Jask after the IRGC launched ballistic missiles toward a US aircraft carrier and a guided-missile destroyer. A third tanker, the unladen M/T KYLO (also known as NOXEN), was destroyed in the Gulf of Oman after its crew was directed to abandon ship.",
+      "is_reply": false,
+      "posted_at": "2026-09-05T14:10:00+00:00",
+      "expect": {"surfaced": true, "dedup": "UPDATE", "category_in": ["OFFICIAL_STATEMENT", "STRIKE_MILITARY"]}
+    },
+    {
+      "source": "x",
+      "source_post_id": "9002000004",
+      "account_id": "1400000003",
+      "account_handle": "MoloWarMonitor",
+      "tier": "osint",
+      "url": "https://x.com/MoloWarMonitor/status/9002000004",
+      "text": "AP wire now carrying it: US military says it struck three Iranian oil tankers - the DOWNY off Kharg Island, STARK 1 near Jask, and KYLO in the Gulf of Oman - after Navy warships were targeted with ballistic missiles.",
+      "quoted_text": null,
+      "is_reply": false,
+      "posted_at": "2026-09-05T17:55:00+00:00",
+      "expect": {"surfaced": true, "dedup": "DUPLICATE", "category_in": ["STRIKE_MILITARY", "OFFICIAL_STATEMENT"]}
+    },
+    {
+      "source": "x",
+      "source_post_id": "9002000005",
+      "account_id": "1400000008",
+      "account_handle": "MenchOsint",
+      "tier": "osint",
+      "url": "https://x.com/MenchOsint/status/9002000005",
+      "text": "Iranian state TV denies the DOWNY was disabled, airing footage it claims shows the vessel intact and underway near Kharg. NITC says exports are \"proceeding normally.\" Footage is not yet geolocated.",
+      "quoted_text": null,
+      "is_reply": false,
+      "posted_at": "2026-09-05T19:31:00+00:00",
+      "expect": {"surfaced": true, "dedup": "UPDATE", "category_in": ["OFFICIAL_STATEMENT", "STRIKE_MILITARY", "SHIPPING_INCIDENT"]}
+    },
+    {
+      "source": "x",
+      "source_post_id": "9002000006",
+      "account_id": "1400000002",
+      "account_handle": "HormuzLetter",
+      "tier": "osint",
+      "url": "https://x.com/HormuzLetter/status/9002000006",
+      "text": "This week's Hormuz Letter is out: why the strait almost never actually closes, what the 1988 precedent tells us about escalation ladders, and our updated framework for reading tanker-war headlines. Link below. Subscribe so you never miss one.",
+      "quoted_text": null,
+      "is_reply": false,
+      "posted_at": "2026-09-05T20:15:00+00:00",
+      "expect": {"surfaced": false, "dedup": null, "max_score": 49, "category_in": ["OTHER"]}
+    }
+  ]
+}

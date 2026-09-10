@@ -1,0 +1,286 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>newsstream</title>
+<style>
+  :root {
+    --bg: #0e1116; --panel: #171b23; --panel2: #1e232e; --border: #2a3140;
+    --text: #d7dde8; --dim: #8a93a5; --accent: #4da3ff;
+    --red: #ff5d5d; --amber: #ffb454; --green: #4dcf7f;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text);
+         font: 14px/1.45 -apple-system, "Segoe UI", Roboto, sans-serif; }
+  a { color: var(--accent); text-decoration: none; }
+  main { max-width: 780px; margin: 0 auto; padding: 18px 16px 90px; }
+  h1 { font-size: 16px; letter-spacing: .12em; text-transform: uppercase; color: var(--dim); }
+
+  /* ---- tray ---- */
+  #tray { position: fixed; top: 12px; right: 12px; width: 370px; z-index: 10;
+          display: flex; flex-direction: column; gap: 8px; }
+  .card { background: var(--panel2); border: 1px solid var(--border); border-left: 4px solid var(--accent);
+          border-radius: 8px; padding: 10px 12px; cursor: pointer;
+          box-shadow: 0 6px 18px rgba(0,0,0,.45); animation: slidein .18s ease-out; }
+  @keyframes slidein { from { transform: translateX(30px); opacity: 0; } }
+  .card.update { padding: 7px 12px; font-size: 13px; border-left-color: var(--amber); }
+  .card.unfiltered { border-left-color: var(--red); }
+  .card .top { display: flex; gap: 6px; align-items: center; margin-bottom: 4px; flex-wrap: wrap; }
+  .badge { font-size: 10px; letter-spacing: .06em; padding: 1px 7px; border-radius: 9px;
+           background: #26304a; color: #9fc3ff; text-transform: uppercase; }
+  .badge.warn { background: #4a2626; color: #ff9f9f; }
+  .badge.kind-update { background: #4a3a1a; color: #ffd28a; }
+  .tier { font-size: 10px; padding: 1px 6px; border-radius: 9px; border: 1px solid var(--border); color: var(--dim); }
+  .tier.official { color: var(--green); border-color: var(--green); }
+  .tier.tracker { color: var(--accent); border-color: var(--accent); }
+  .oneline { font-weight: 600; }
+  .card .meta { color: var(--dim); font-size: 12px; margin-top: 4px; display: flex; gap: 10px; }
+  .whatchanged { color: var(--amber); font-size: 12px; margin-top: 3px; }
+  #morepill { align-self: flex-end; background: var(--panel2); border: 1px solid var(--border);
+              border-radius: 12px; padding: 3px 12px; color: var(--dim); cursor: pointer; font-size: 12px; }
+
+  /* ---- feed ---- */
+  .event { background: var(--panel); border: 1px solid var(--border); border-radius: 8px;
+           margin-bottom: 14px; padding: 12px 14px; }
+  .event h3 { margin: 0 0 2px; font-size: 14px; }
+  .event .summary { color: var(--dim); font-size: 13px; margin: 4px 0 8px; }
+  .event.stale { opacity: .55; }
+  .post { border-top: 1px solid var(--border); padding: 7px 0 6px; font-size: 13px; }
+  .post .role { font-size: 10px; text-transform: uppercase; letter-spacing: .08em; color: var(--dim); margin-right: 6px; }
+  .post .role.origin { color: var(--accent); }
+  .post .role.update { color: var(--amber); }
+  .sup { border-left: 3px solid var(--border); background: var(--panel); border-radius: 6px;
+         padding: 8px 12px; margin-bottom: 8px; font-size: 13px; color: var(--dim); }
+  .sup .score { color: var(--amber); font-weight: 600; margin-right: 8px; }
+  .controls { display: flex; gap: 14px; align-items: center; margin: 10px 0 16px; color: var(--dim); font-size: 13px; }
+  .controls label { cursor: pointer; user-select: none; }
+
+  /* ---- footer ---- */
+  footer { position: fixed; bottom: 0; left: 0; right: 0; background: var(--panel);
+           border-top: 1px solid var(--border); padding: 7px 16px; font-size: 12px;
+           color: var(--dim); display: flex; gap: 18px; flex-wrap: wrap; align-items: center; }
+  .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 4px; }
+  .dot.live { background: var(--green); } .dot.disabled { background: #555; }
+  .dot.reconnecting, .dot.starting { background: var(--amber); }
+  .dot.error, .dot.budget-paused { background: var(--red); }
+  #banner { position: fixed; top: 0; left: 0; right: 0; background: #4a1d1d; color: #ffb3b3;
+            text-align: center; padding: 5px; font-size: 13px; z-index: 20; display: none; }
+</style>
+</head>
+<body>
+<div id="banner"></div>
+<div id="tray"></div>
+<main>
+  <h1>newsstream — crude oil</h1>
+  <div class="controls">
+    <label><input type="checkbox" id="showSuppressed"> show suppressed (threshold tuning)</label>
+    <label><input type="checkbox" id="sound"> chime on new events</label>
+  </div>
+  <div id="suppressed" style="display:none"></div>
+  <div id="feed"></div>
+</main>
+<footer id="footer">connecting…</footer>
+
+<script>
+"use strict";
+const $ = (id) => document.getElementById(id);
+const esc = (s) => (s ?? "").toString().replace(/[&<>"]/g, (c) => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+let lastId = 0;
+let maxStacked = 5;
+let trayCards = [];        // newest first
+let trayExpanded = false;
+const seenIds = new Set();
+const ackedIds = new Set();
+
+/* ---------- time helpers ---------- */
+function rel(tsIso) {
+  const s = Math.max(0, (Date.now() - new Date(tsIso).getTime()) / 1000);
+  if (s < 60) return Math.round(s) + "s ago";
+  if (s < 3600) return Math.round(s / 60) + "m ago";
+  if (s < 86400) return Math.round(s / 3600) + "h ago";
+  return Math.round(s / 86400) + "d ago";
+}
+function latencyStr(sec) {
+  if (sec == null) return "";
+  return sec < 120 ? `+${Math.round(sec)}s` : `+${Math.round(sec / 60)}m`;
+}
+
+/* ---------- chime (off by default) ---------- */
+$("sound").checked = localStorage.getItem("ns_sound") === "1";
+$("sound").onchange = () => localStorage.setItem("ns_sound", $("sound").checked ? "1" : "0");
+function chime() {
+  if (!$("sound").checked) return;
+  try {
+    const ctx = new AudioContext();
+    const o = ctx.createOscillator(), g = ctx.createGain();
+    o.connect(g); g.connect(ctx.destination);
+    o.frequency.value = 880; g.gain.setValueAtTime(0.08, ctx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.5);
+    o.start(); o.stop(ctx.currentTime + 0.5);
+  } catch (e) { /* audio blocked until user gesture; fine */ }
+}
+
+/* ---------- tray ---------- */
+function cardHtml(n) {
+  const isUpdate = n.kind === "UPDATE";
+  const badges = (n.badges || []).map((b) => `<span class="badge warn">${esc(b)}</span>`).join("");
+  return `
+    <div class="top">
+      ${n.category ? `<span class="badge">${esc(n.category)}</span>` : ""}
+      ${isUpdate ? `<span class="badge kind-update">update</span>` : ""}
+      ${n.kind === "UNFILTERED" ? `<span class="badge warn">unfiltered</span>` : ""}
+      ${badges}
+      <span class="tier ${esc(n.tier)}">${esc(n.tier)}</span>
+    </div>
+    ${isUpdate ? `<div>${esc(n.event_title)}</div><div class="whatchanged">↳ ${esc(n.what_changed || n.one_line)}</div>`
+               : `<div class="oneline">${esc(n.one_line)}</div>`}
+    <div class="meta">
+      <span>@${esc(n.handle)}</span>
+      <span data-ts="${esc(n.posted_at)}">${rel(n.posted_at)}</span>
+      <span title="platform latency">${latencyStr(n.platform_latency_s)}</span>
+      <a href="${esc(n.url)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">open ↗</a>
+    </div>`;
+}
+
+function renderTray() {
+  const tray = $("tray");
+  tray.innerHTML = "";
+  const visible = trayExpanded ? trayCards : trayCards.slice(0, maxStacked);
+  for (const n of visible) {
+    const el = document.createElement("div");
+    el.className = "card" + (n.kind === "UPDATE" ? " update" : "") + (n.kind === "UNFILTERED" ? " unfiltered" : "");
+    el.innerHTML = cardHtml(n);
+    el.onclick = () => ack(n.notification_id);
+    tray.appendChild(el);
+  }
+  const hidden = trayCards.length - visible.length;
+  if (hidden > 0) {
+    const pill = document.createElement("div");
+    pill.id = "morepill";
+    pill.textContent = `+${hidden} more`;
+    pill.onclick = () => { trayExpanded = true; renderTray(); };
+    tray.appendChild(pill);
+  } else if (trayExpanded && trayCards.length <= maxStacked) {
+    trayExpanded = false;
+  }
+}
+
+function ack(id) {
+  ackedIds.add(id);
+  trayCards = trayCards.filter((c) => c.notification_id !== id);
+  renderTray();
+}
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape" && trayCards.length) ack(trayCards[0].notification_id);
+});
+
+let feedTimer = null;
+function handleNotification(n, { fresh }) {
+  if (seenIds.has(n.notification_id)) return;
+  seenIds.add(n.notification_id);
+  lastId = Math.max(lastId, n.notification_id);
+  if (fresh && !ackedIds.has(n.notification_id)) {
+    trayCards.unshift(n);
+    renderTray();
+    if (n.kind === "NEW_EVENT") chime();
+  }
+  clearTimeout(feedTimer);
+  feedTimer = setTimeout(loadFeed, 400);
+}
+
+/* ---------- SSE with reconnect + backfill ---------- */
+function connect() {
+  const es = new EventSource("/stream");
+  es.addEventListener("notification", (ev) => handleNotification(JSON.parse(ev.data), { fresh: true }));
+  es.onopen = async () => {
+    const missed = await fetch(`/notifications?since=${lastId}`).then((r) => r.json()).catch(() => []);
+    for (const n of missed) handleNotification(n, { fresh: true });
+  };
+  // EventSource auto-reconnects; onopen re-runs the backfill each time.
+}
+
+/* ---------- feed ---------- */
+async function loadFeed() {
+  const data = await fetch("/feed").then((r) => r.json()).catch(() => null);
+  if (!data) return;
+  $("feed").innerHTML = data.events.map((ev) => `
+    <div class="event ${ev.status === "stale" ? "stale" : ""}">
+      <h3><span class="badge">${esc(ev.category)}</span> ${esc(ev.title)}</h3>
+      <div class="summary">${esc(ev.summary)}</div>
+      ${ev.posts.map((p) => `
+        <div class="post">
+          <span class="role ${esc(p.role)}">${esc(p.role)}</span>
+          <a href="${esc(p.url)}" target="_blank" rel="noopener">@${esc(p.account_handle)}</a>
+          <span class="tier ${esc(p.tier)}">${esc(p.tier)}</span>
+          <span style="color:var(--dim)" data-ts="${esc(p.posted_at)}">${rel(p.posted_at)}</span>
+          <div>${esc(p.one_line || p.text.slice(0, 220))}</div>
+        </div>`).join("")}
+    </div>`).join("") || `<div style="color:var(--dim)">No events yet.</div>`;
+}
+
+/* ---------- suppressed ---------- */
+$("showSuppressed").onchange = async (e) => {
+  const box = $("suppressed");
+  box.style.display = e.target.checked ? "" : "none";
+  if (!e.target.checked) return;
+  const data = await fetch("/suppressed").then((r) => r.json()).catch(() => ({ posts: [] }));
+  box.innerHTML = data.posts.map((p) => `
+    <div class="sup" title="${esc(p.sub_scores || "")}">
+      <span class="score">${p.materiality_score ?? "?"}</span>
+      <span class="badge">${esc(p.category || "-")}</span>
+      <a href="${esc(p.url)}" target="_blank" rel="noopener">@${esc(p.account_handle)}</a>
+      ${esc(p.one_line || p.text.slice(0, 180))}
+      ${p.error ? `<span class="badge warn">${esc(p.error)}</span>` : ""}
+    </div>`).join("") || `<div style="color:var(--dim)">Nothing suppressed yet.</div>`;
+};
+
+/* ---------- footer / status ---------- */
+async function loadStatus() {
+  const s = await fetch("/status").then((r) => r.json()).catch(() => null);
+  if (!s) { $("footer").textContent = "server unreachable"; return; }
+  maxStacked = s.max_stacked || 5;
+  const adapters = s.adapters.map((a) =>
+    `<span title="${esc(a.detail)}"><span class="dot ${esc(a.state)}"></span>${esc(a.name)}</span>`).join(" ");
+  const lat = s.latency;
+  const fmt = (x) => (x == null ? "–" : x + "s");
+  $("footer").innerHTML = `
+    ${adapters}
+    <span>platform p50 ${fmt(lat.platform.p50)} / p95 ${fmt(lat.platform.p95)}</span>
+    <span>pipeline p50 ${fmt(lat.surface.p50)} / p95 ${fmt(lat.surface.p95)}</span>
+    <span>seen ${s.counts.posts_seen} · surfaced ${s.counts.surfaced} today</span>
+    <span>LLM ~$${s.llm_spend_today}</span>
+    <span>X reads ${s.x_reads_today}/${s.x_daily_read_budget}</span>
+    <span>threshold ${s.threshold}</span>`;
+  const banner = $("banner");
+  if (s.llm_fail_open) {
+    banner.textContent = "Classifier unavailable — official/tracker posts surfacing UNFILTERED";
+    banner.style.display = "";
+  } else if (s.x_reads_today >= s.x_daily_read_budget && s.x_daily_read_budget > 0) {
+    banner.textContent = "X daily read budget exhausted — X polling paused until next UTC day (Telegram still live)";
+    banner.style.display = "";
+  } else if (s.inactive_accounts.length) {
+    banner.textContent = "Account(s) no longer resolvable: " + s.inactive_accounts.join(", ");
+    banner.style.display = "";
+  } else {
+    banner.style.display = "none";
+  }
+}
+
+/* ---------- boot ---------- */
+(async function boot() {
+  // Seed lastId with history so old notifications don't flood the tray.
+  const hist = await fetch("/notifications?since=0").then((r) => r.json()).catch(() => []);
+  for (const n of hist) handleNotification(n, { fresh: false });
+  connect();
+  loadFeed();
+  loadStatus();
+  setInterval(loadStatus, 10000);
+  setInterval(() => {
+    document.querySelectorAll("[data-ts]").forEach((el) => { el.textContent = rel(el.dataset.ts); });
+  }, 30000);
+})();
+</script>
+</body>
+</html>
