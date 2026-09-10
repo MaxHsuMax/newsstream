@@ -22,6 +22,16 @@ Replies are dropped client-side, and every post is filtered against the
 configured handle set (fast_tweet events are not rule-attributed). Note a
 handle rename silently breaks `from:` rules until the config is updated —
 the official x_api adapter (ID-based) is the rename-proof fallback.
+
+Billing behavior observed live 2026-09-10 (trial account):
+- ~15 credits (=$0.00015) per DELIVERED tweet, and each interval_seconds
+  check redelivers the account's newest tweet, billed again. Effective cost
+  ~= 86400/interval_seconds x $0.00015/day (~$0.43/day at 30 s) plus real
+  volume. The pipeline dedups redeliveries by post id, so no LLM cost.
+- First activation delivers a backlog (posts up to ~2 h old) in one burst.
+- Free tier REST limit: 1 request / 5 s (handled by _call).
+- Rules are deactivated on shutdown (matching appears to bill even with no
+  listener connected) and re-armed by the next startup's rule sync.
 """
 
 from __future__ import annotations
@@ -133,9 +143,21 @@ class XPushAdapter(SourceAdapter):
             headers={"X-API-Key": self.settings.x_push_api_key},
         )
 
+    @staticmethod
+    async def _call(rest: httpx.AsyncClient, method: str, path: str, **kw) -> httpx.Response:
+        """REST call with 429 pacing: the free tier allows 1 request / 5 s."""
+        r = await rest.request(method, path, **kw)
+        for _ in range(3):
+            if r.status_code != 429:
+                break
+            await asyncio.sleep(5.5)
+            r = await rest.request(method, path, **kw)
+        return r
+
     async def resolve_account(self, handle: str) -> tuple[str, str]:
         async with self._rest() as rest:
-            r = await rest.get("/twitter/user/info", params={"userName": handle.lstrip("@")})
+            r = await self._call(rest, "GET", "/twitter/user/info",
+                                 params={"userName": handle.lstrip("@")})
             r.raise_for_status()
             data = r.json()["data"]
             return str(data["id"]), data["userName"]
@@ -146,7 +168,7 @@ class XPushAdapter(SourceAdapter):
         interval = self.settings.x_push_interval
         desired = build_rule_values(handles)
 
-        r = await rest.get("/oapi/tweet_filter/get_rules")
+        r = await self._call(rest, "GET", "/oapi/tweet_filter/get_rules")
         r.raise_for_status()
         ours = {
             rule["tag"]: rule
@@ -158,8 +180,8 @@ class XPushAdapter(SourceAdapter):
             tag = f"{prefix}-{i}"
             existing = ours.pop(tag, None)
             if existing is None:
-                resp = await rest.post(
-                    "/oapi/tweet_filter/add_rule",
+                resp = await self._call(
+                    rest, "POST", "/oapi/tweet_filter/add_rule",
                     json={"tag": tag, "value": value, "interval_seconds": interval},
                 )
                 resp.raise_for_status()
@@ -170,8 +192,8 @@ class XPushAdapter(SourceAdapter):
             else:
                 rule_id = existing["rule_id"]
             # New rules start inactive; update_rule also activates (is_effect=1).
-            resp = await rest.post(
-                "/oapi/tweet_filter/update_rule",
+            resp = await self._call(
+                rest, "POST", "/oapi/tweet_filter/update_rule",
                 json={"rule_id": rule_id, "tag": tag, "value": value,
                       "interval_seconds": interval, "is_effect": 1},
             )
@@ -180,8 +202,8 @@ class XPushAdapter(SourceAdapter):
                 raise RuntimeError(f"update_rule failed: {resp.json().get('msg')}")
 
         for stale in ours.values():  # rules for accounts no longer configured
-            await rest.request("DELETE", "/oapi/tweet_filter/delete_rule",
-                               json={"rule_id": stale["rule_id"]})
+            await self._call(rest, "DELETE", "/oapi/tweet_filter/delete_rule",
+                             json={"rule_id": stale["rule_id"]})
             log.info("deleted stale x_push rule %s (%s)", stale["tag"], stale["value"])
         log.info("x_push rules synced: %d rule(s) for %d account(s)", len(desired), len(handles))
 
@@ -202,36 +224,63 @@ class XPushAdapter(SourceAdapter):
         import websockets  # lazy: optional at runtime
 
         first = True
-        while True:
-            try:
-                if not first:
-                    await asyncio.sleep(RECONNECT_WAIT_S)
-                first = False
+        try:
+            while True:
+                try:
+                    if not first:
+                        await asyncio.sleep(RECONNECT_WAIT_S)
+                    first = False
+                    async with self._rest() as rest:
+                        await self._sync_rules(rest, handles)
+                    async with websockets.connect(
+                        s.x_push_url,
+                        additional_headers={"x-api-key": s.x_push_api_key},
+                        ping_interval=40, ping_timeout=30,
+                    ) as ws:
+                        self.status.state = "live"
+                        self.status.detail = f"twitterapi.io, {len(handles)} account(s)"
+                        log.info("x_push live (%s)", s.x_push_url)
+                        async for raw in ws:
+                            try:
+                                posts = parse_ws_message(json.loads(raw), allowed)
+                            except (json.JSONDecodeError, KeyError, TypeError) as e:
+                                log.warning("x_push unparseable message: %s", e)
+                                continue
+                            for post in posts:
+                                post.tier = s.tier_for_handle(post.account_handle)
+                                if self.repo:
+                                    await self.repo.upsert_account(
+                                        "x", post.account_id, post.account_handle, post.tier)
+                                await sink(post)
+                except asyncio.CancelledError:
+                    raise
+                except Exception as e:
+                    self.status.state = "reconnecting"
+                    self.status.detail = f"{str(e)[:120]} (retry in {RECONNECT_WAIT_S}s)"
+                    log.warning("x_push disconnected (%s); reconnecting in %ds", e, RECONNECT_WAIT_S)
+        except asyncio.CancelledError:
+            await self._deactivate_rules()
+            raise
+
+    async def _deactivate_rules(self) -> None:
+        """Best-effort on shutdown: matched tweets bill even with no listener
+        connected, so stop our rules; the next startup's sync re-arms them."""
+        try:
+            async with asyncio.timeout(25):
                 async with self._rest() as rest:
-                    await self._sync_rules(rest, handles)
-                async with websockets.connect(
-                    s.x_push_url,
-                    additional_headers={"x-api-key": s.x_push_api_key},
-                    ping_interval=40, ping_timeout=30,
-                ) as ws:
-                    self.status.state = "live"
-                    self.status.detail = f"twitterapi.io, {len(handles)} account(s)"
-                    log.info("x_push live (%s)", s.x_push_url)
-                    async for raw in ws:
-                        try:
-                            posts = parse_ws_message(json.loads(raw), allowed)
-                        except (json.JSONDecodeError, KeyError, TypeError) as e:
-                            log.warning("x_push unparseable message: %s", e)
+                    r = await self._call(rest, "GET", "/oapi/tweet_filter/get_rules")
+                    for rule in r.json().get("rules") or []:
+                        if not str(rule.get("tag", "")).startswith(self.settings.x_push_rule_tag):
                             continue
-                        for post in posts:
-                            post.tier = s.tier_for_handle(post.account_handle)
-                            if self.repo:
-                                await self.repo.upsert_account(
-                                    "x", post.account_id, post.account_handle, post.tier)
-                            await sink(post)
-            except asyncio.CancelledError:
-                raise
-            except Exception as e:
-                self.status.state = "reconnecting"
-                self.status.detail = f"{str(e)[:120]} (retry in {RECONNECT_WAIT_S}s)"
-                log.warning("x_push disconnected (%s); reconnecting in %ds", e, RECONNECT_WAIT_S)
+                        await self._call(
+                            rest, "POST", "/oapi/tweet_filter/update_rule",
+                            json={"rule_id": rule["rule_id"], "tag": rule["tag"],
+                                  "value": rule["value"],
+                                  "interval_seconds": rule.get("interval_seconds",
+                                                               self.settings.x_push_interval),
+                                  "is_effect": 0},
+                        )
+                        log.info("deactivated x_push rule %s", rule["tag"])
+        except Exception as e:
+            log.warning("could not deactivate x_push rules on shutdown: %s "
+                        "(they keep billing until the next run or manual delete)", e)

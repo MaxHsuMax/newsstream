@@ -51,10 +51,15 @@ telegram_channels: []
 # fallback. Running push and polling together is safe - posts dedup by id.
 
 x_push:
-  enabled: true              # TwitterAPI.io push feed: set X_PUSH_API_KEY in .env (~$0.15/1k posts delivered)
+  enabled: true              # TwitterAPI.io push feed: set X_PUSH_API_KEY in .env
   url: wss://ws.twitterapi.io/twitter/tweet/websocket
   rule_tag: newsstream       # tag prefix for the vendor-side filter rules this app manages
-  interval_seconds: 10       # vendor-side check cadence (0.05-86400); this is your X latency floor
+  # Vendor-side check cadence = your X latency floor AND the cost driver:
+  # each check redelivers (and bills, $0.00015) the newest post, so
+  # $/day ~= 86400/interval * 0.00015  ->  5s=$2.60  10s=$1.30  30s=$0.43
+  # (measured live 2026-09-10; the pipeline dedups redeliveries by id).
+  # 10s chosen 2026-09-11: latency > cost for this user. ~$40/mo.
+  interval_seconds: 10
 
 x_api:
   enabled: false             # official X API FALLBACK: flip on (with X_BEARER_TOKEN) if the push vendor has an outage
