@@ -50,11 +50,21 @@
   .post .role { font-size: 10px; text-transform: uppercase; letter-spacing: .08em; color: var(--dim); margin-right: 6px; }
   .post .role.origin { color: var(--accent); }
   .post .role.update { color: var(--amber); }
+  details.extras > summary { cursor: pointer; color: var(--dim); font-size: 12px;
+    padding: 6px 0 5px; border-top: 1px solid var(--border); list-style: none; user-select: none; }
+  details.extras > summary::-webkit-details-marker { display: none; }
+  details.extras > summary::before { content: "▸ "; color: var(--accent); }
+  details.extras[open] > summary::before { content: "▾ "; }
+  details.extras > summary:hover { color: var(--text); }
   .sup { border-left: 3px solid var(--border); background: var(--panel); border-radius: 6px;
          padding: 8px 12px; margin-bottom: 8px; font-size: 13px; color: var(--dim); }
   .sup .score { color: var(--amber); font-weight: 600; margin-right: 8px; }
-  .controls { display: flex; gap: 14px; align-items: center; margin: 10px 0 16px; color: var(--dim); font-size: 13px; }
+  .controls { display: flex; gap: 14px; align-items: center; margin: 10px 0 16px; color: var(--dim); font-size: 13px; flex-wrap: wrap; }
   .controls label { cursor: pointer; user-select: none; }
+  .controls button { background: var(--panel2); color: var(--text); border: 1px solid var(--border);
+    border-radius: 6px; padding: 4px 12px; font-size: 12px; cursor: pointer; }
+  .controls button:hover:not(:disabled) { border-color: var(--accent); }
+  .controls button:disabled { opacity: .5; cursor: default; }
 
   /* ---- footer ---- */
   footer { position: fixed; bottom: 0; left: 0; right: 0; background: var(--panel);
@@ -62,7 +72,7 @@
            color: var(--dim); display: flex; gap: 18px; flex-wrap: wrap; align-items: center; }
   .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 4px; }
   .dot.live { background: var(--green); } .dot.disabled { background: #555; }
-  .dot.reconnecting, .dot.starting { background: var(--amber); }
+  .dot.reconnecting, .dot.starting, .dot.degraded { background: var(--amber); }
   .dot.error, .dot.budget-paused { background: var(--red); }
   #banner { position: fixed; top: 0; left: 0; right: 0; background: #4a1d1d; color: #ffb3b3;
             text-align: center; padding: 5px; font-size: 13px; z-index: 20; display: none; }
@@ -76,6 +86,7 @@
   <div class="controls">
     <label><input type="checkbox" id="showSuppressed"> show suppressed (threshold tuning)</label>
     <label><input type="checkbox" id="sound"> chime on new events</label>
+    <button id="refetchBtn" title="Re-pull the last 12h from every account and run it through the pipeline — use after waking the machine">⟳ refetch 12h</button>
   </div>
   <div id="suppressed" style="display:none"></div>
   <div id="feed"></div>
@@ -202,22 +213,49 @@ function connect() {
 }
 
 /* ---------- feed ---------- */
+const expandedEvents = new Set();  // survives re-renders triggered by live updates
+
+function postHtml(p) {
+  return `
+    <div class="post">
+      <span class="role ${esc(p.role)}">${esc(p.role)}</span>
+      <a href="${esc(p.url)}" target="_blank" rel="noopener">@${esc(p.account_handle)}</a>
+      <span class="tier ${esc(p.tier)}">${esc(p.tier)}</span>
+      <span style="color:var(--dim)" data-ts="${esc(p.posted_at)}">${rel(p.posted_at)}</span>
+      <div>${esc(p.one_line || p.text.slice(0, 220))}</div>
+    </div>`;
+}
+
 async function loadFeed() {
   const data = await fetch("/feed").then((r) => r.json()).catch(() => null);
   if (!data) return;
-  $("feed").innerHTML = data.events.map((ev) => `
+  $("feed").innerHTML = data.events.map((ev) => {
+    const origin = ev.posts.filter((p) => p.role === "origin");
+    const extras = ev.posts.filter((p) => p.role !== "origin");
+    const nUpd = extras.filter((p) => p.role === "update").length;
+    const nDup = extras.length - nUpd;
+    const label = [
+      nUpd ? `${nUpd} update${nUpd > 1 ? "s" : ""}` : "",
+      nDup ? `${nDup} duplicate${nDup > 1 ? "s" : ""}` : "",
+    ].filter(Boolean).join(", ");
+    return `
     <div class="event ${ev.status === "stale" ? "stale" : ""}">
       <h3><span class="badge">${esc(ev.category)}</span> ${esc(ev.title)}</h3>
       <div class="summary">${esc(ev.summary)}</div>
-      ${ev.posts.map((p) => `
-        <div class="post">
-          <span class="role ${esc(p.role)}">${esc(p.role)}</span>
-          <a href="${esc(p.url)}" target="_blank" rel="noopener">@${esc(p.account_handle)}</a>
-          <span class="tier ${esc(p.tier)}">${esc(p.tier)}</span>
-          <span style="color:var(--dim)" data-ts="${esc(p.posted_at)}">${rel(p.posted_at)}</span>
-          <div>${esc(p.one_line || p.text.slice(0, 220))}</div>
-        </div>`).join("")}
-    </div>`).join("") || `<div style="color:var(--dim)">No events yet.</div>`;
+      ${origin.map(postHtml).join("")}
+      ${extras.length ? `
+      <details class="extras" data-ev="${ev.id}" ${expandedEvents.has(ev.id) ? "open" : ""}>
+        <summary>${label}</summary>
+        ${extras.map(postHtml).join("")}
+      </details>` : ""}
+    </div>`;
+  }).join("") || `<div style="color:var(--dim)">No events yet.</div>`;
+  document.querySelectorAll("#feed details.extras").forEach((d) => {
+    d.addEventListener("toggle", () => {
+      const id = Number(d.dataset.ev);
+      if (d.open) expandedEvents.add(id); else expandedEvents.delete(id);
+    });
+  });
 }
 
 /* ---------- suppressed ---------- */
@@ -236,11 +274,33 @@ $("showSuppressed").onchange = async (e) => {
     </div>`).join("") || `<div style="color:var(--dim)">Nothing suppressed yet.</div>`;
 };
 
+/* ---------- refetch button ---------- */
+$("refetchBtn").onclick = async () => {
+  const btn = $("refetchBtn");
+  btn.disabled = true;
+  btn.textContent = "refetching…";
+  let ok = false;
+  try {
+    ok = (await fetch("/refetch?hours=12", { method: "POST" })).ok;
+  } catch (e) { /* fall through */ }
+  if (!ok) {
+    btn.textContent = "refetch failed";
+    setTimeout(() => { btn.textContent = "⟳ refetch 12h"; btn.disabled = false; }, 4000);
+  }
+  // On success, loadStatus re-enables the button when the run finishes.
+};
+
 /* ---------- footer / status ---------- */
 async function loadStatus() {
   const s = await fetch("/status").then((r) => r.json()).catch(() => null);
   if (!s) { $("footer").textContent = "server unreachable"; return; }
   maxStacked = s.max_stacked || 5;
+  const btn = $("refetchBtn");
+  if (s.refetch_running) {
+    btn.disabled = true; btn.textContent = "refetching…";
+  } else if (btn.textContent === "refetching…") {
+    btn.disabled = false; btn.textContent = "⟳ refetch 12h";
+  }
   const adapters = s.adapters.map((a) =>
     `<span title="${esc(a.detail)}"><span class="dot ${esc(a.state)}"></span>${esc(a.name)}</span>`).join(" ");
   const lat = s.latency;

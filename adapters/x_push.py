@@ -39,6 +39,7 @@ from __future__ import annotations
 import asyncio
 import json
 import logging
+import time
 from datetime import UTC, datetime, timedelta
 
 import httpx
@@ -54,6 +55,14 @@ RULE_VALUE_MAX = 255
 RECONNECT_WAIT_S = 90  # vendor requirement: let the server release the slot
 LEGACY_TIME_FMT = "%a %b %d %H:%M:%S %z %Y"  # "Sat Mar 15 05:31:28 +0000 2025"
 BACKFILL_WINDOW_H = 3  # only recover posts this recent on (re)connect
+POLL_FALLBACK_S = 600  # poll REST search this long before retrying the WS
+POLL_OVERLAP_S = 30    # since_time overlap between poll cycles; dedup absorbs repeats
+
+
+def _is_ws_rejection(e: Exception) -> bool:
+    """A websockets.exceptions.InvalidStatus handshake refusal with HTTP 403."""
+    resp = getattr(e, "response", None)
+    return type(e).__name__ == "InvalidStatus" and getattr(resp, "status_code", None) == 403
 
 
 def build_rule_values(handles: list[str]) -> list[str]:
@@ -107,6 +116,11 @@ def parse_ws_message(
             continue
         if (t.get("type") or "").lower() == "reply" or t.get("isReply") or t.get("is_reply"):
             continue
+        # Pure retweets add no text and the vendor's rule-based WS delivery
+        # never carries them; drop them in REST paths too for consistency.
+        # Quote tweets (quoted_tweet + own text) still flow.
+        if t.get("retweeted_tweet") or (t.get("text") or "").startswith("RT @"):
+            continue
         author = t.get("author") or {}
         handle = author.get("userName") or author.get("username") or t.get("screen_name") or ""
         if allowed_handles is not None and handle.lower() not in allowed_handles:
@@ -137,6 +151,9 @@ class XPushAdapter(SourceAdapter):
         self.settings = settings
         self.repo = repo
         self.status = AdapterStatus(name="x_push")
+        self._poll_continuous = False  # True while REST polling with no coverage gap
+        self._ws_403_count = 0  # consecutive handshake rejections
+        self.refetch_running = False
 
     def _rest(self) -> httpx.AsyncClient:
         return httpx.AsyncClient(
@@ -199,6 +216,20 @@ class XPushAdapter(SourceAdapter):
                 continue
             else:
                 rule_id = existing["rule_id"]
+                if existing.get("is_effect") == 1:
+                    # Active rules reject updates, but accept deactivation;
+                    # deactivate with the OLD content, then apply the change.
+                    resp = await self._call(
+                        rest, "POST", "/oapi/tweet_filter/update_rule",
+                        json={"rule_id": rule_id, "tag": existing.get("tag", tag),
+                              "value": existing["value"],
+                              "interval_seconds": existing.get("interval_seconds", interval),
+                              "is_effect": 0},
+                    )
+                    resp.raise_for_status()
+                    if resp.json().get("status") != "success":
+                        raise RuntimeError(
+                            f"deactivate before update failed: {resp.json().get('msg')}")
             # New rules start inactive; update_rule also activates (is_effect=1).
             resp = await self._call(
                 rest, "POST", "/oapi/tweet_filter/update_rule",
@@ -253,6 +284,8 @@ class XPushAdapter(SourceAdapter):
                         ) as ws:
                             self.status.state = "live"
                             self.status.detail = f"twitterapi.io, {len(handles)} account(s)"
+                            self._poll_continuous = False
+                            self._ws_403_count = 0
                             log.info("x_push live (%s)", s.x_push_url)
                             try:
                                 await self._backfill(rest, handles, allowed, sink)
@@ -268,6 +301,33 @@ class XPushAdapter(SourceAdapter):
                 except asyncio.CancelledError:
                     raise
                 except Exception as e:
+                    if _is_ws_rejection(e):
+                        # WS handshake 403. Common cause: the vendor still holds
+                        # our previous connection's slot (~90s+ after a close),
+                        # so retry quickly at first; if 403s persist, something
+                        # bigger is wrong (key blocked / plan gating) - poll
+                        # longer between attempts. The feed stays alive on REST
+                        # search polling at the same cadence either way.
+                        self._ws_403_count += 1
+                        window = 120.0 if self._ws_403_count <= 2 else POLL_FALLBACK_S
+                        self.status.state = "degraded"
+                        self.status.detail = (f"WS rejected (403) x{self._ws_403_count} - REST polling "
+                                              f"fallback, next WS retry in {int(window)}s")
+                        log.error("x_push WS rejected (403, #%d). REST polling for %ds, then retrying WS.",
+                                  self._ws_403_count, int(window))
+                        try:
+                            async with self._rest() as rest:
+                                if not self._poll_continuous:
+                                    await self._backfill(rest, handles, allowed, sink)
+                                await self._poll_stream(rest, handles, allowed, sink, window)
+                                self._poll_continuous = True
+                        except asyncio.CancelledError:
+                            raise
+                        except Exception as pe:
+                            self._poll_continuous = False
+                            log.warning("x_push poll fallback error (%s); will retry WS", pe)
+                        first = True  # retry WS immediately after the poll window
+                        continue
                     self.status.state = "reconnecting"
                     self.status.detail = f"{str(e)[:120]} (retry in {RECONNECT_WAIT_S}s)"
                     log.warning("x_push disconnected (%s); reconnecting in %ds", e, RECONNECT_WAIT_S)
@@ -284,28 +344,105 @@ class XPushAdapter(SourceAdapter):
             await sink(post)
 
     async def _backfill(self, rest: httpx.AsyncClient, handles: list[str],
-                        allowed: set[str], sink: Sink) -> None:
+                        allowed: set[str], sink: Sink, *,
+                        hours: float = BACKFILL_WINDOW_H, max_pages: int = 1) -> int:
         """Fetch each account's recent posts over REST after (re)connecting.
         The WebSocket has no replay, so posts published while disconnected
         would otherwise be lost (happened live 2026-09-10: a 25-min reconnect
         loop silently dropped a post). Downstream dedup skips already-seen ids;
         the window keeps a cold start from flooding the queue with old posts
         (last_tweets returns ~20/account regardless of age)."""
-        cutoff = datetime.now(UTC) - timedelta(hours=BACKFILL_WINDOW_H)
+        cutoff = datetime.now(UTC) - timedelta(hours=hours)
         pushed = 0
         for handle in handles:
-            r = await self._call(rest, "GET", "/twitter/user/last_tweets",
-                                 params={"userName": handle})
-            if r.status_code != 200:
-                log.warning("x_push backfill: last_tweets %s -> %d", handle, r.status_code)
-                continue
-            body = r.json()
-            tweets = body.get("tweets") or (body.get("data") or {}).get("tweets") or []
-            posts = parse_ws_message({"event_type": "tweet", "tweets": tweets}, allowed)
-            recent = [p for p in posts if p.posted_at >= cutoff]
-            await self._emit(recent, sink)
-            pushed += len(recent)
-        log.info("x_push backfill: %d recent post(s) pushed (dedup drops the already-seen)", pushed)
+            cursor = ""
+            for _page in range(max_pages):
+                params = {"userName": handle}
+                if cursor:
+                    params["cursor"] = cursor
+                r = await self._call(rest, "GET", "/twitter/user/last_tweets", params=params)
+                if r.status_code != 200:
+                    log.warning("x_push backfill: last_tweets %s -> %d", handle, r.status_code)
+                    break
+                body = r.json()
+                tweets = body.get("tweets") or (body.get("data") or {}).get("tweets") or []
+                posts = parse_ws_message({"event_type": "tweet", "tweets": tweets}, allowed)
+                recent = [p for p in posts if p.posted_at >= cutoff]
+                await self._emit(recent, sink)
+                pushed += len(recent)
+                cursor = body.get("next_cursor") or ""
+                # Stop paging once a page reaches past the cutoff.
+                if len(recent) < len(posts) or not body.get("has_next_page") or not cursor:
+                    break
+        log.info("x_push backfill(%.0fh): %d recent post(s) pushed (dedup drops the already-seen)",
+                 hours, pushed)
+        return pushed
+
+    async def _poll_once(
+        self, rest: httpx.AsyncClient, query_bases: list[str], since: int, allowed: set[str]
+    ) -> tuple[list[NormalizedPost], int]:
+        """One REST advanced-search sweep for posts newer than `since` (unix).
+        Returns (posts, new since). Billed per result, so empty sweeps are cheap
+        and there is no per-check redelivery like the WS path."""
+        cycle_start = int(time.time())
+        out: list[NormalizedPost] = []
+        for base in query_bases:
+            cursor = ""
+            for _page in range(3):
+                r = await self._call(
+                    rest, "GET", "/twitter/tweet/advanced_search",
+                    params={"query": f"({base}) since_time:{since}",
+                            "queryType": "Latest", "cursor": cursor},
+                )
+                if r.status_code != 200:
+                    log.warning("x_push poll: advanced_search -> %d", r.status_code)
+                    break
+                body = r.json()
+                tweets = body.get("tweets") or []
+                out += parse_ws_message({"event_type": "tweet", "tweets": tweets}, allowed)
+                cursor = body.get("next_cursor") or ""
+                if not body.get("has_next_page") or not tweets or not cursor:
+                    break
+        return out, max(since, cycle_start - POLL_OVERLAP_S)
+
+    async def _poll_stream(
+        self, rest: httpx.AsyncClient, handles: list[str], allowed: set[str],
+        sink: Sink, duration_s: float,
+    ) -> None:
+        query_bases = build_rule_values(handles)
+        since = int(time.time()) - 60
+        deadline = time.monotonic() + duration_s
+        sweeps = got = 0
+        while time.monotonic() < deadline:
+            posts, since = await self._poll_once(rest, query_bases, since, allowed)
+            await self._emit(posts, sink)
+            sweeps += 1
+            got += len(posts)
+            if sweeps % 10 == 0:  # heartbeat so a hung fallback is visible in logs
+                log.info("x_push poll fallback: %d sweep(s), %d post(s)", sweeps, got)
+            await asyncio.sleep(self.settings.x_push_interval)
+        log.info("x_push poll window done (%d sweeps, %d posts); retrying WS", sweeps, got)
+
+    async def refetch(self, sink: Sink, hours: float = 12) -> int:
+        """On-demand deep backfill (the UI's refetch button): page each
+        account's timeline back `hours` and push everything through the
+        pipeline. Dedup drops the already-seen, so this is safe to run any
+        time; the use case is catching up after the machine slept overnight.
+        Returns posts pushed, or -1 if not configured / already running."""
+        if self.refetch_running:
+            return -1
+        handles = [a.handle for a in self.settings.accounts if a.source == "x"]
+        if not handles or not self.settings.x_push_api_key:
+            return -1
+        self.refetch_running = True
+        try:
+            async with self._rest() as rest:
+                return await self._backfill(
+                    rest, handles, {h.lower() for h in handles}, sink,
+                    hours=hours, max_pages=6,
+                )
+        finally:
+            self.refetch_running = False
 
     async def _deactivate_rules(self) -> None:
         """Best-effort on shutdown: matched tweets bill even with no listener

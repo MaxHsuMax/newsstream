@@ -1,187 +1,212 @@
 {
- "0effddddbaeab9fa6aa6f6fcf5d8c4e4": {
-  "input_tokens": 1131,
-  "output_tokens": 246,
-  "text": "```json\n{\n  \"sub_scores\": {\n    \"event_not_commentary\": 9,\n    \"flow_impact\": 8,\n    \"primary_source\": 7,\n    \"specificity\": 9,\n    \"novelty_prior\": 5\n  },\n  \"category\": \"OFFICIAL_STATEMENT\",\n  \"one_line\": \"Iran denies involvement in strikes on SIDR and SENEGAL PROSPERITY near Khasab.\",\n  \"entities\": {\n    \"vessels\": [\"SIDR\", \"SENEGAL PROSPERITY\"],\n    \"locations\": [\"Khasab\", \"Strait of Hormuz\"],\n    \"actors\": [\"Iran Mission to UN\", \"IRGC\", \"Tasnim\"]\n  },\n  \"reasoning\": \"Official denial of a material incident (vessel strikes). Denial itself is a principal statement that reframes risk perception and attribution, even though the incident may be previously reported. High specificity on vessels and location. Flow_impact inherits from the disputed strike event affecting Hormuz transit.\"\n}\n```"
+ "0ca2c12d8d3b832923770dc25a012c3f": {
+  "input_tokens": 1309,
+  "output_tokens": 294,
+  "text": "```json\n{\n  \"sub_scores\": {\n    \"event_not_commentary\": 9,\n    \"flow_impact\": 8,\n    \"primary_source\": 9,\n    \"specificity\": 9,\n    \"novelty_prior\": 7\n  },\n  \"category\": \"SHIPPING_INCIDENT\",\n  \"one_line\": \"M/T DOWNY (NITC) hit off Kharg Island; M/T STARK 1 struck near Jask. Fourth vessel in days.\",\n  \"entities\": {\n    \"vessels\": [\n      \"M/T DOWNY\",\n      \"M/T STARK 1\",\n      \"SINOPA\",\n      \"HAWK\"\n    ],\n    \"locations\": [\n      \"Kharg Island\",\n      \"Jask\",\n      \"Persian Gulf\"\n    ],\n    \"actors\": [\n      \"NITC\"\n    ]\n  },\n  \"reasoning\": \"First-hand tracker identification of two new strike events with vessel names, locations, satellite confirmation, and heat signature. Direct threat to loaded Iranian crude export capacity at Kharg and Jask terminals. Escalating pattern (4 vessels in days) signals heightened chokepoint risk.\"\n}\n```"
  },
- "2030a606ab4e1a4503cc2c0966176d6d": {
-  "input_tokens": 1117,
-  "output_tokens": 237,
-  "text": "```json\n{\n  \"sub_scores\": {\n    \"event_not_commentary\": 9,\n    \"flow_impact\": 9,\n    \"primary_source\": 5,\n    \"specificity\": 6,\n    \"novelty_prior\": 9\n  },\n  \"category\": \"STRIKE_MILITARY\",\n  \"one_line\": \"Explosions reported on Iranian tanker off Kharg Island; US aircraft nearby.\",\n  \"entities\": {\n    \"vessels\": [\"Iranian oil tanker (unnamed)\"],\n    \"locations\": [\"Kharg Island\", \"Persian Gulf\"],\n    \"actors\": [\"US (aircraft)\", \"Iran\"]\n  },\n  \"reasoning\": \"Alleged military strike at Kharg Island\u2014Iran's largest export terminal\u2014is a high-flow-impact event if confirmed. OSINT account reports via observation (aircraft), but tanker identity and damage assessment unconfirmed. Specificity limited by lack of vessel name/AIS. Massive flow implications if true.\"\n}\n```"
- },
- "22602952401ef49a86681df26b20050c": {
-  "input_tokens": 1051,
-  "output_tokens": 67,
-  "text": "{\"decision\":\"DUPLICATE\",\"event_id\":1,\"what_changed\":\"\",\"reasoning\":\"AP wire restates CENTCOM confirmation and all three named tankers already in the event summary.\"}"
- },
- "2f1e3d37279519dc8e3bfb70a57a561c": {
-  "input_tokens": 1162,
-  "output_tokens": 277,
-  "text": "```json\n{\n  \"sub_scores\": {\n    \"event_not_commentary\": 10,\n    \"flow_impact\": 9,\n    \"primary_source\": 9,\n    \"specificity\": 10,\n    \"novelty_prior\": 8\n  },\n  \"category\": \"SHIPPING_INCIDENT\",\n  \"one_line\": \"Two VLCCs struck by projectiles exiting Hormuz; Senegal Prosperity dead in water, listing.\",\n  \"entities\": {\n    \"vessels\": [\"SIDR\", \"SENEGAL PROSPERITY\"],\n    \"locations\": [\"Strait of Hormuz\", \"Khasab\", \"16.6nm NE Khasab\", \"17nm E Khasab\"],\n    \"actors\": [\"Saudi Arabia\", \"Liberia (flag)\"]\n  },\n  \"reasoning\": \"Acute shipping incident at Hormuz exit with two laden VLCCs hit by projectiles; one vessel disabled and listing. Direct threat to Persian Gulf export flows and chokepoint transits. High specificity (named vessels, precise coordinates, times, damage assessment). TankerTrackers provides real-time AIS tracking.\"\n}\n```"
- },
- "3367b0f5e2c37617eabd39cab3ad613a": {
-  "input_tokens": 288,
-  "output_tokens": 205,
-  "text": "{\"summary\": \"Explosions reported on an Iranian tanker off Kharg Island, with US aircraft nearby; TankerTrackers identifies the vessel as the NITC-linked, laden M/T DOWNY, now static with a visible heat signature on satellite AIS. Separately, the M/T STARK 1 was struck near Jask, following strikes on the SINOPA and HAWK off Jask days earlier. CENTCOM has now confirmed the strikes, citing an IRGC missile launch at a US carrier, and reported a third tanker, KYLO, destroyed in the Gulf of Oman.\"}"
- },
- "3de03e283f01b270242f462eeaf4a674": {
-  "input_tokens": 1132,
-  "output_tokens": 238,
-  "text": "```json\n{\n  \"sub_scores\": {\n    \"event_not_commentary\": 9,\n    \"flow_impact\": 8,\n    \"primary_source\": 7,\n    \"specificity\": 9,\n    \"novelty_prior\": 8\n  },\n  \"category\": \"SHIPPING_INCIDENT\",\n  \"one_line\": \"Two Saudi supertankers attacked by projectiles at Hormuz mouth; one disabled.\",\n  \"entities\": {\n    \"vessels\": [\"SIDR\", \"SENEGAL PROSPERITY\"],\n    \"locations\": [\"Khasab\", \"Strait of Hormuz\"],\n    \"actors\": [\"Saudi Arabia\", \"Houthis (implied)\"]\n  },\n  \"reasoning\": \"Concrete attack on major crude carriers at chokepoint with confirmed damage and location. Reuters wire cited. Named vessels, time, and outcome. Direct threat to Hormuz transit flows and regional shipping risk premium. Crews safe limits immediate casualty concern but vessel disability is material.\"\n}\n```"
- },
- "3e1a021be458236a956dddf27137088c": {
-  "input_tokens": 1000,
-  "output_tokens": 98,
-  "text": "{\"decision\":\"UPDATE\",\"event_id\":1,\"what_changed\":\"Iran officially denies involvement, calling reports fabrications; IRGC-linked Tasnim echoes denial.\",\"reasoning\":\"Same incident; adds attribution denial from a named official source not present in the event summary.\"}"
- },
- "41c6cf44f89245f1c43d4e2300504e2e": {
-  "input_tokens": 1135,
-  "output_tokens": 244,
-  "text": "```json\n{\n  \"sub_scores\": {\n    \"event_not_commentary\": 9,\n    \"flow_impact\": 9,\n    \"primary_source\": 7,\n    \"specificity\": 9,\n    \"novelty_prior\": 6\n  },\n  \"category\": \"STRIKE_MILITARY\",\n  \"one_line\": \"US military strikes three Iranian tankers (DOWNY, STARK 1, KYLO) after ballistic missile attack on Navy.\",\n  \"entities\": {\n    \"vessels\": [\"DOWNY\", \"STARK 1\", \"KYLO\"],\n    \"locations\": [\"Kharg Island\", \"Jask\", \"Gulf of Oman\"],\n    \"actors\": [\"US military\", \"Iran\"]\n  },\n  \"reasoning\": \"Official US military statement on strikes against Iranian tankers in critical chokepoint zones. Named vessels, locations, and explicit causation chain. High specificity and immediate flow relevance; damages to three tankers affect Persian Gulf/Strait exports directly.\"\n}\n```"
- },
- "529dedbd26e07e084b1b5e0dd9085483": {
-  "input_tokens": 1121,
-  "output_tokens": 256,
-  "text": "```json\n{\n  \"sub_scores\": {\n    \"event_not_commentary\": 9,\n    \"flow_impact\": 8,\n    \"primary_source\": 7,\n    \"specificity\": 8,\n    \"novelty_prior\": 7\n  },\n  \"category\": \"OFFICIAL_STATEMENT\",\n  \"one_line\": \"IRGC Navy warns tanker crews at Kuwaiti, Bahraini ports to evacuate citing US hostile actions.\",\n  \"entities\": {\n    \"vessels\": [\"tankers at Kuwaiti and Bahraini ports (unspecified)\"],\n    \"locations\": [\"Hormuz Strait region\", \"Kuwait ports\", \"Bahrain ports\"],\n    \"actors\": [\"IRGC Navy\", \"US military\", \"tanker crews\"]\n  },\n  \"reasoning\": \"Official military warning by Iranian principal directly targeting ship operations in chokepoint region. Credible escalation signal affecting port access and crew safety decisions. High flow-risk implications if tankers evacuate or avoid region. Wire service distribution confirms materiality.\"\n}\n```"
- },
- "54d7ea7bf888df0b8ad6dcee8dc43a37": {
-  "input_tokens": 1129,
-  "output_tokens": 201,
-  "text": "```json\n{\n  \"sub_scores\": {\n    \"event_not_commentary\": 2,\n    \"flow_impact\": 1,\n    \"primary_source\": 2,\n    \"specificity\": 1,\n    \"novelty_prior\": 2\n  },\n  \"category\": \"OTHER\",\n  \"one_line\": \"Weekly recap thread of Gulf events; no specific new facts disclosed.\",\n  \"entities\": {\n    \"vessels\": [],\n    \"locations\": [\"Persian Gulf\"],\n    \"actors\": []\n  },\n  \"reasoning\": \"This is a meta-announcement of a recap/digest thread, not the thread itself. It signals compilation of prior events (strikes, warnings, denials) without disclosing specific new facts. No actionable flow data, vessels, times, or locations named. Engagement bait disguised as summary.\"\n}\n```"
- },
- "57fa0f1c6f4b9b6289310cae80514582": {
-  "input_tokens": 400,
-  "output_tokens": 227,
-  "text": "{\"summary\": \"Explosions reported on an Iranian tanker off Kharg Island, with US aircraft nearby; TankerTrackers identifies the vessel as the NITC-linked, laden M/T DOWNY, static with a visible heat signature. Iranian state TV denies DOWNY was disabled, airing ungeolocated footage of it intact; NITC says exports proceed normally. M/T STARK 1 was struck near Jask, after strikes on SINOPA and HAWK. CENTCOM confirmed the strikes, citing an IRGC missile launch at a US carrier, and reported a third tanker, KYLO, destroyed in the Gulf of Oman.\"}"
- },
- "58a7546fe36a9cc4de27d36972828a80": {
-  "input_tokens": 1003,
-  "output_tokens": 99,
-  "text": "{\"decision\":\"UPDATE\",\"event_id\":1,\"what_changed\":\"Iran state TV and NITC deny DOWNY disabled, claim vessel intact and exports normal; footage ungeolocated\",\"reasoning\":\"Official denial contradicting reported disabling adds new information not in summary.\"}"
- },
- "608f62cccfed86a79ecb7ea4fc309273": {
-  "input_tokens": 1581,
-  "output_tokens": 227,
-  "text": "{\"sub_scores\": {\"event_not_commentary\": 8, \"flow_impact\": 7, \"primary_source\": 5, \"specificity\": 8, \"novelty_prior\": 7}, \"category\": \"OFFICIAL_STATEMENT\", \"one_line\": \"Iran state TV, NITC deny DOWNY disabled; claim exports near Kharg proceeding normally\", \"entities\": {\"vessels\": [\"DOWNY\"], \"locations\": [\"Kharg Island\"], \"actors\": [\"Iranian state TV\", \"NITC\"]}, \"reasoning\": \"Official denial of a prior material tanker incident affecting Kharg export flows; specific vessel and source, though footage unverified.\"}"
- },
- "61fbb11d36247fc78ce64e353d793b50": {
-  "input_tokens": 1099,
-  "output_tokens": 183,
-  "text": "```json\n{\n  \"sub_scores\": {\n    \"event_not_commentary\": 2,\n    \"flow_impact\": 1,\n    \"primary_source\": 1,\n    \"specificity\": 1,\n    \"novelty_prior\": 2\n  },\n  \"category\": \"OTHER\",\n  \"one_line\": \"Humorous commentary on rapid tanker incidents; no specific event disclosed.\",\n  \"entities\": {\n    \"vessels\": [],\n    \"locations\": [],\n    \"actors\": []\n  },\n  \"reasoning\": \"Engagement/meme post with no concrete facts, locations, vessels, times, or flow claims. References a notional 'tanker war' colloquially but discloses no material incident. Not actionable.\"\n}\n```"
- },
- "6c580bb7e1305edfbfc16fd8d084cf1b": {
-  "input_tokens": 1144,
-  "output_tokens": 253,
-  "text": "```json\n{\n  \"sub_scores\": {\n    \"event_not_commentary\": 9,\n    \"flow_impact\": 8,\n    \"primary_source\": 7,\n    \"specificity\": 8,\n    \"novelty_prior\": 6\n  },\n  \"category\": \"STRIKE_MILITARY\",\n  \"one_line\": \"Houthi drone/missile barrage hits Saudi Aramco Jazan refinery; large fire reported.\",\n  \"entities\": {\n    \"vessels\": [],\n    \"locations\": [\"Jazan refinery\", \"Abha oil distribution centre\", \"Khamis Mushait airbase\"],\n    \"actors\": [\"Houthis\", \"Saudi Aramco\", \"Saudi air defenses\"]\n  },\n  \"reasoning\": \"OSINT account reports active attack on major Saudi refinery infrastructure with visual confirmation (fire, smoke columns). Jazan refinery is material to export capacity. Specific locations, scale (dozens of drones), and damage indicators (fire). Likely early reporting; may be confirmed/updated.\"\n}\n```"
- },
- "7d1f595285b44036454e21a934eb2867": {
-  "input_tokens": 273,
-  "output_tokens": 152,
-  "text": "{\"summary\": \"Explosions reported on an Iranian tanker off Kharg Island, with US aircraft nearby; TankerTrackers identifies the vessel as the NITC-linked, laden M/T DOWNY, now static with a visible heat signature on satellite AIS. Separately, the M/T STARK 1 was struck near Jask, following strikes on the SINOPA and HAWK off Jask days earlier.\"}"
- },
- "84eed56f2af4013acce948d984a983a2": {
-  "input_tokens": 1124,
-  "output_tokens": 221,
-  "text": "```json\n{\n  \"sub_scores\": {\n    \"event_not_commentary\": 9,\n    \"flow_impact\": 8,\n    \"primary_source\": 6,\n    \"specificity\": 7,\n    \"novelty_prior\": 4\n  },\n  \"category\": \"OFFICIAL_STATEMENT\",\n  \"one_line\": \"Iran denies DOWNY disabled; claims exports normal; unverified footage aired.\",\n  \"entities\": {\n    \"vessels\": [\"DOWNY\"],\n    \"locations\": [\"Kharg\"],\n    \"actors\": [\"Iranian state TV\", \"NITC\"]\n  },\n  \"reasoning\": \"Official denial of a material event (alleged DOWNY disablement). Changes risk perception around Kharg exports even if underlying incident already known. Specificity moderate (named vessel, location); primary source weak (state TV claims, not independent verification). Footage unlocated limits confirmation.\"\n}\n```"
- },
- "89a98a2bd4c860d73cee55ade0b62f72": {
-  "input_tokens": 1145,
-  "output_tokens": 236,
-  "text": "```json\n{\n  \"sub_scores\": {\n    \"event_not_commentary\": 3,\n    \"flow_impact\": 6,\n    \"primary_source\": 4,\n    \"specificity\": 4,\n    \"novelty_prior\": 3\n  },\n  \"category\": \"OTHER\",\n  \"one_line\": \"OSINT analyst frames recent IRGC vessel attacks as sustained Hormuz pressure; threading historical insurance/rerouting patterns.\",\n  \"entities\": {\n    \"vessels\": [],\n    \"locations\": [\"Strait of Hormuz\"],\n    \"actors\": [\"IRGC\"]\n  },\n  \"reasoning\": \"Post is analysis/framing of prior attacks (Aug 20\u201331) rather than reporting a new incident. Flow_impact moderate: discussion of insurance and rerouting has indirect effect on barrels. Primary_source low (synthesis, not tracking). Specificity weak (no named vessels/times in excerpt). Novelty low if attacks already reported.\"\n}\n```"
- },
- "8b90980c213a3ac513fb16d7b1001241": {
-  "input_tokens": 1150,
-  "output_tokens": 261,
-  "text": "```json\n{\n  \"sub_scores\": {\n    \"event_not_commentary\": 9,\n    \"flow_impact\": 9,\n    \"primary_source\": 9,\n    \"specificity\": 9,\n    \"novelty_prior\": 7\n  },\n  \"category\": \"SHIPPING_INCIDENT\",\n  \"one_line\": \"M/T DOWNY (NITC) hit off Kharg Island; M/T STARK 1 struck near Jask.\",\n  \"entities\": {\n    \"vessels\": [\"M/T DOWNY\", \"M/T STARK 1\", \"SINOPA\", \"HAWK\"],\n    \"locations\": [\"Kharg Island\", \"Jask\"],\n    \"actors\": [\"NITC\"]\n  },\n  \"reasoning\": \"Direct vessel identification via satellite tracking of combat damage off key Persian Gulf production zone. Two confirmed strikes (Downy laden, static with heat signature; Stark 1 near Jask) with pattern context. High specificity, primary source data, direct flow impact on export infrastructure and tanker transit risk.\"\n}\n```"
- },
- "9072423942c941e258f656574082893a": {
-  "input_tokens": 1134,
-  "output_tokens": 239,
-  "text": "```json\n{\n  \"sub_scores\": {\n    \"event_not_commentary\": 9,\n    \"flow_impact\": 9,\n    \"primary_source\": 7,\n    \"specificity\": 8,\n    \"novelty_prior\": 8\n  },\n  \"category\": \"STRIKE_MILITARY\",\n  \"one_line\": \"IRGC Navy warns tanker crews to abandon vessels at Kuwait/Bahrain ports; threatens retaliation for US strikes.\",\n  \"entities\": {\n    \"vessels\": [\"oil tankers (unspecified)\"],\n    \"locations\": [\"Kuwait ports\", \"Bahrain ports\", \"Persian Gulf\"],\n    \"actors\": [\"IRGC Navy\", \"US\", \"Iran\"]\n  },\n  \"reasoning\": \"Official IRGC statement (principal actor) directly threatening maritime infrastructure and tanker operations at critical Persian Gulf export hubs. Broadcast on maritime channels suggests imminent operational intent. High flow-disruption risk if crews comply or attacks materialize.\"\n}\n```"
- },
- "916945f4fffa928131eaa26e07eb2a0c": {
-  "input_tokens": 1130,
+ "11bc0f1f7f0a3b41eebfd726e5073ca1": {
+  "input_tokens": 1288,
   "output_tokens": 184,
-  "text": "```json\n{\n  \"sub_scores\": {\n    \"event_not_commentary\": 2,\n    \"flow_impact\": 1,\n    \"primary_source\": 3,\n    \"specificity\": 2,\n    \"novelty_prior\": 3\n  },\n  \"category\": \"OTHER\",\n  \"one_line\": \"Newsletter publication on Hormuz strait closure risk and tanker-war analysis framework.\",\n  \"entities\": {\n    \"vessels\": [],\n    \"locations\": [\"Strait of Hormuz\"],\n    \"actors\": []\n  },\n  \"reasoning\": \"This is a newsletter announcement and analytical recap, not reporting of a new material event. No specific incident, statement, or flow change described. Educational content about historical precedent and interpretation frameworks.\"\n}\n```"
+  "text": "```json\n{\n  \"sub_scores\": {\n    \"event_not_commentary\": 2,\n    \"flow_impact\": 0,\n    \"primary_source\": 2,\n    \"specificity\": 1,\n    \"novelty_prior\": 1\n  },\n  \"category\": \"OTHER\",\n  \"one_line\": \"Weekly recap thread; no new facts presented.\",\n  \"entities\": {\n    \"vessels\": [],\n    \"locations\": [\"Persian Gulf\"],\n    \"actors\": []\n  },\n  \"reasoning\": \"Engagement bait / recap framing ('week in review', 'grab a coffee'). No specific incidents, vessels, times, or locations named. Promises to summarize existing events, not report new ones. Zero novelty signal.\"\n}\n```"
  },
- "9bb21e4373e11908be6b29a01750945b": {
-  "input_tokens": 894,
-  "output_tokens": 132,
-  "text": "{\"decision\":\"UPDATE\",\"event_id\":1,\"what_changed\":\"MTO confirms damage location (port side, engine room, ballast tank), vessel not under command at anchor, crew evacuated all accounted for.\",\"reasoning\":\"Same vessel/incident as candidate 1, but adds official MTO confirmation, damage specifics, anchoring status and crew evacuation details not in summary.\"}"
+ "139f80dbb43132e0216ca2ca3ea9763c": {
+  "input_tokens": 1293,
+  "output_tokens": 250,
+  "text": "```json\n{\n  \"sub_scores\": {\n    \"event_not_commentary\": 9,\n    \"flow_impact\": 9,\n    \"primary_source\": 7,\n    \"specificity\": 8,\n    \"novelty_prior\": 8\n  },\n  \"category\": \"STRIKE_MILITARY\",\n  \"one_line\": \"IRGC Navy warns tanker crews in Kuwait/Bahrain to abandon vessels; threatens strikes in retaliation.\",\n  \"entities\": {\n    \"vessels\": [\"oil tankers (unspecified)\"],\n    \"locations\": [\"Kuwait ports\", \"Bahrain ports\", \"Persian Gulf\"],\n    \"actors\": [\"IRGC Navy\", \"US\", \"Iran\"]\n  },\n  \"reasoning\": \"Direct threat by Iranian military to abandon tankers in critical Gulf chokepoint ports. Immediate maritime broadcast signals intent to disrupt flows and escalate tanker targeting. High flow impact if credible; specificity limited by no named vessels but specific ports named. Real-time warning to mariners is material event.\"\n}\n```"
  },
- "a004f14129e9850094ef39084470850b": {
-  "input_tokens": 852,
-  "output_tokens": 74,
-  "text": "{\"decision\":\"DUPLICATE\",\"event_id\":1,\"what_changed\":\"\",\"reasoning\":\"Same two vessels, same location and disabling; adds only Reuters attribution and crew safety, already substantively covered.\"}"
+ "146e6269285d419bb498185857b15305": {
+  "input_tokens": 1321,
+  "output_tokens": 267,
+  "text": "```json\n{\n  \"sub_scores\": {\n    \"event_not_commentary\": 10,\n    \"flow_impact\": 9,\n    \"primary_source\": 9,\n    \"specificity\": 10,\n    \"novelty_prior\": 9\n  },\n  \"category\": \"SHIPPING_INCIDENT\",\n  \"one_line\": \"Two VLCCs struck by projectiles exiting Hormuz; SENEGAL PROSPERITY disabled, listing.\",\n  \"entities\": {\n    \"vessels\": [\"SIDR\", \"SENEGAL PROSPERITY\"],\n    \"locations\": [\"Strait of Hormuz\", \"Khasab\", \"16.6nm NE of Khasab\", \"17nm E of Khasab\"],\n    \"actors\": [\"Saudi Arabia (SIDR flag)\", \"Liberia (SENEGAL PROSPERITY flag)\"]\n  },\n  \"reasoning\": \"Dual VLCC attack in Hormuz exit corridor with one vessel disabled. Direct threat to chokepoint flow. Tracker account with AIS data provides specificity and primary-source credibility. Material escalation of shipping risk.\"\n}\n```"
  },
- "a263f9bdf8b529fc5f68ee6795e22ed1": {
-  "input_tokens": 251,
-  "output_tokens": 134,
-  "text": "{\"summary\": \"Houthi drone/missile barrage hit Saudi Aramco's Jazan refinery, sparking a large fire. Saudi energy ministry has since confirmed the blaze struck a crude processing unit and has been brought under control, with no casualties reported. Refinery output is \\\"partially reduced\\\" while damage is assessed \u2014 the first official confirmation of unit-level damage at the facility.\"}"
+ "206046513f32691566fa6fead9100d29": {
+  "input_tokens": 1304,
+  "output_tokens": 214,
+  "text": "```json\n{\n  \"sub_scores\": {\n    \"event_not_commentary\": 2,\n    \"flow_impact\": 6,\n    \"primary_source\": 3,\n    \"specificity\": 2,\n    \"novelty_prior\": 3\n  },\n  \"category\": \"OTHER\",\n  \"one_line\": \"Analysis: IRGC vessel attacks Aug 20-31 compared to historical tanker-war insurance/routing patterns.\",\n  \"entities\": {\n    \"vessels\": [],\n    \"locations\": [\"Strait of Hormuz\"],\n    \"actors\": [\"IRGC\"]\n  },\n  \"reasoning\": \"Thread announcement on historical analysis of insurance/rerouting behavior during claimed IRGC attack campaign. References multiple attacks (assumed factual elsewhere) but this post itself is analytical recap, not reporting new incidents. Flow impact inherited from underlying attacks but post is commentary.\"\n}\n```"
  },
- "aa39d9df0a4fcc0862ec3e462e9eb351": {
-  "input_tokens": 806,
-  "output_tokens": 120,
-  "text": "{\"decision\":\"UPDATE\",\"event_id\":1,\"what_changed\":\"Tanker identified as NITC-linked M/T DOWNY, laden, static with heat signature; second vessel STARK 1 struck near Jask.\",\"reasoning\":\"Adds vessel identification and an additional strike to the previously unnamed Kharg Island tanker explosion event.\"}"
+ "25e4f586b20319d1e2eff8afe673d00b": {
+  "input_tokens": 1287,
+  "output_tokens": 231,
+  "text": "```json\n{\n  \"sub_scores\": {\n    \"event_not_commentary\": 8,\n    \"flow_impact\": 8,\n    \"primary_source\": 7,\n    \"specificity\": 8,\n    \"novelty_prior\": 6\n  },\n  \"category\": \"OFFICIAL_STATEMENT\",\n  \"one_line\": \"Iran denies DOWNY disabled; NITC confirms exports proceeding normally at Kharg.\",\n  \"entities\": {\n    \"vessels\": [\"DOWNY\"],\n    \"locations\": [\"Kharg\"],\n    \"actors\": [\"Iran (state TV)\", \"NITC\", \"IRNA\"]\n  },\n  \"reasoning\": \"Official denial of material incident affecting major export hub. Statement from NITC principal directly addresses flow risk at Kharg. Specificity high (named vessel, location, official source). Novelty depends on prior DOWNY incident reports; denial itself is new material event per spec \u00a78.\"\n}\n```"
  },
- "ab2aca6e59392c4b59f221f5c97164a5": {
-  "input_tokens": 856,
-  "output_tokens": 77,
-  "text": "{\"decision\": \"DUPLICATE\", \"event_id\": 1, \"what_changed\": \"\", \"reasoning\": \"Post restates the same IRGC Navy warning already captured; wire-service pickup adds no material change to the event picture.\"}"
+ "26b99d9169151d39b3387b40ab2477cd": {
+  "input_tokens": 913,
+  "output_tokens": 114,
+  "text": "{\"decision\":\"UPDATE\",\"event_id\":1,\"what_changed\":\"MTO confirms damage location (port side, engine room, ballast tank), vessel not under command at anchor, crew evacuated safely\",\"reasoning\":\"Official MTO advisory adds damage specifics, anchoring status, and crew evacuation beyond existing summary.\"}"
  },
- "ad52c511222f5ae05bd368b4b74b6d11": {
-  "input_tokens": 1035,
-  "output_tokens": 129,
-  "text": "{\"decision\":\"UPDATE\",\"event_id\":1,\"what_changed\":\"CENTCOM officially confirms strikes, cites IRGC missile launch at US carrier, adds third tanker KYLO destroyed in Gulf of Oman\",\"reasoning\":\"Candidate lacked official attribution, motive, and the third vessel; CENTCOM confirmation materially updates the picture.\"}"
+ "26d1604e8c88cf6204f9a910a0f84c4d": {
+  "input_tokens": 1801,
+  "output_tokens": 235,
+  "text": "{\"sub_scores\": {\"event_not_commentary\": 8, \"flow_impact\": 7, \"primary_source\": 5, \"specificity\": 7, \"novelty_prior\": 7}, \"category\": \"OFFICIAL_STATEMENT\", \"one_line\": \"Iranian state TV denies tanker DOWNY disabled; NITC says Kharg exports proceeding normally\", \"entities\": {\"vessels\": [\"DOWNY\"], \"locations\": [\"Kharg Island\"], \"actors\": [\"Iranian state TV\", \"NITC\", \"IRNA\"]}, \"reasoning\": \"Official denial of a reported tanker incident; directly addresses Kharg export flows, inheriting disputed event's flow impact.\"}"
  },
- "b23064574aae689dd15d8049cf79b75f": {
-  "input_tokens": 355,
+ "2836287effe7277d2ccff04ef880738b": {
+  "input_tokens": 1291,
+  "output_tokens": 237,
+  "text": "```json\n{\n  \"sub_scores\": {\n    \"event_not_commentary\": 9,\n    \"flow_impact\": 8,\n    \"primary_source\": 7,\n    \"specificity\": 9,\n    \"novelty_prior\": 8\n  },\n  \"category\": \"SHIPPING_INCIDENT\",\n  \"one_line\": \"Two Saudi supertankers attacked near Hormuz; one disabled, crews safe.\",\n  \"entities\": {\n    \"vessels\": [\"SIDR\", \"SENEGAL PROSPERITY\"],\n    \"locations\": [\"Khasab\", \"Strait of Hormuz\"],\n    \"actors\": [\"Reuters\", \"Saudi Arabia\"]\n  },\n  \"reasoning\": \"Direct attack on supertankers at Hormuz choke point with material vessel damage. Named vessels, specific location, time attribution. Primary source is Reuters wire. High flow disruption risk from disabled vessel at critical chokepoint. Crew safety clarification reduces immediate casualty risk but not incident severity.\"\n}\n```"
+ },
+ "35e05cd963bccff4d5a291f93f9034ff": {
+  "input_tokens": 1276,
+  "output_tokens": 236,
+  "text": "```json\n{\n  \"sub_scores\": {\n    \"event_not_commentary\": 9,\n    \"flow_impact\": 9,\n    \"primary_source\": 6,\n    \"specificity\": 7,\n    \"novelty_prior\": 8\n  },\n  \"category\": \"STRIKE_MILITARY\",\n  \"one_line\": \"Explosions reported on Iranian tanker off Kharg Island; US aircraft observed nearby.\",\n  \"entities\": {\n    \"vessels\": [\"Iranian oil tanker (unspecified)\"],\n    \"locations\": [\"Kharg Island\", \"Persian Gulf\"],\n    \"actors\": [\"US military\", \"Iran\"]\n  },\n  \"reasoning\": \"New fact: explosions + US military presence near Kharg, Iran's primary export hub. Directly threatens ~5M bbl/d export capacity. OSINT account citing breaking reports but not first-hand verification. Specificity limited (tanker unnamed, exact time unclear). High novelty if confirmed.\"\n}\n```"
+ },
+ "44d7d78edfb688c74a714089b5f761d7": {
+  "input_tokens": 1290,
+  "output_tokens": 255,
+  "text": "```json\n{\n  \"sub_scores\": {\n    \"event_not_commentary\": 9,\n    \"flow_impact\": 8,\n    \"primary_source\": 7,\n    \"specificity\": 9,\n    \"novelty_prior\": 6\n  },\n  \"category\": \"OFFICIAL_STATEMENT\",\n  \"one_line\": \"Iran denies involvement in strikes on SIDR, SENEGAL PROSPERITY off Khasab.\",\n  \"entities\": {\n    \"vessels\": [\"SIDR\", \"SENEGAL PROSPERITY\"],\n    \"locations\": [\"Khasab\", \"Gulf of Oman\"],\n    \"actors\": [\"Iran UN Mission\", \"IRGC\", \"Tasnim\"]\n  },\n  \"reasoning\": \"Official denial by Iran of a material incident (vessel strikes in critical chokepoint waters). Denial itself is a principal statement reshaping risk perception. High specificity (named vessels, location). Primary source via IRGC-linked outlet. Underlying incident may be known, but denial is a new material event per spec \u00a78.\"\n}\n```"
+ },
+ "45c874587245985594388c429c5ec939": {
+  "input_tokens": 1285,
+  "output_tokens": 210,
+  "text": "```json\n{\n  \"sub_scores\": {\n    \"event_not_commentary\": 9,\n    \"flow_impact\": 7,\n    \"primary_source\": 8,\n    \"specificity\": 8,\n    \"novelty_prior\": 6\n  },\n  \"category\": \"OFFICIAL_STATEMENT\",\n  \"one_line\": \"Saudi confirms Jazan refinery crude unit fire; output partially reduced pending damage assessment.\",\n  \"entities\": {\n    \"vessels\": [],\n    \"locations\": [\"Jazan refinery\"],\n    \"actors\": [\"Saudi energy ministry\"]\n  },\n  \"reasoning\": \"Official confirmation of infrastructure damage at a material supply node. Statement is first unit-level attribution by Saudi authorities; quantifies impact as partial output reduction. Fire control claim reduces acute risk but damage assessment remains open. Refinery outages affect crude offtake and global pricing.\"\n}\n```"
+ },
+ "46dde4fde9115194656589235fea40d6": {
+  "input_tokens": 759,
+  "output_tokens": 121,
+  "text": "{\"decision\":\"UPDATE\",\"event_id\":1,\"what_changed\":\"Official Saudi confirmation: crude unit fire contained, no casualties, refinery output partially reduced pending damage assessment.\",\"reasoning\":\"Post adds first official ministry confirmation with unit-level damage, casualty status, and output impact beyond prior unofficial fire reports.\"}"
+ },
+ "4d3b9683c7bbb04a13e68eb32b541946": {
+  "input_tokens": 874,
+  "output_tokens": 72,
+  "text": "{\"decision\":\"DUPLICATE\",\"event_id\":1,\"what_changed\":\"\",\"reasoning\":\"Same two vessels, same location and disabling; Reuters wording adds no material new detail beyond crew safety.\"}"
+ },
+ "5d3d7bf99be6ee81eecca0913d9a6107": {
+  "input_tokens": 815,
+  "output_tokens": 116,
+  "text": "{\"decision\":\"DUPLICATE\",\"event_id\":1,\"what_changed\":\"\",\"reasoning\":\"Post restates candidate 1: same Houthi strike on Jazan refinery plus Abha centre and Khamis Mushait air defenses, already in entities/summary.\"}"
+ },
+ "5f7dd6de490d7ccee116755858fa8e16": {
+  "input_tokens": 1046,
+  "output_tokens": 135,
+  "text": "{\"decision\":\"UPDATE\",\"event_id\":1,\"what_changed\":\"CENTCOM officially confirms strikes, cites IRGC ballistic missile attack on US carrier, adds third tanker KYLO destroyed in Gulf of Oman.\",\"reasoning\":\"Official confirmation plus new details (cause, third vessel) materially update the tracked Kharg/Jask tanker strike event.\"}"
+ },
+ "63bc1500db4259192cdcc0a2af3b8078": {
+  "input_tokens": 1283,
+  "output_tokens": 228,
+  "text": "```json\n{\n  \"sub_scores\": {\n    \"event_not_commentary\": 9,\n    \"flow_impact\": 8,\n    \"primary_source\": 6,\n    \"specificity\": 7,\n    \"novelty_prior\": 7\n  },\n  \"category\": \"OFFICIAL_STATEMENT\",\n  \"one_line\": \"Iran denies DOWNY disabled; NITC claims exports normal; unverified footage released.\",\n  \"entities\": {\n    \"vessels\": [\"DOWNY\"],\n    \"locations\": [\"Kharg\"],\n    \"actors\": [\"Iranian state TV\", \"NITC\", \"Iran\"]\n  },\n  \"reasoning\": \"Official denial of a material incident (vessel disability affecting Kharg exports) is itself material per spec \u00a78\u2014it directly addresses flow-risk perception. Footage unverified, but the statement from NITC is a principal's claim on export status. Flow impact inherits disputed event magnitude.\"\n}\n```"
+ },
+ "656eb79e386b742cd1e662d7e1025e8b": {
+  "input_tokens": 391,
+  "output_tokens": 226,
+  "text": "{\"summary\": \"CENTCOM has confirmed the strikes, citing an IRGC ballistic missile attack on a US carrier, and reported a third tanker, KYLO, destroyed in the Gulf of Oman. Earlier: explosions on an Iranian tanker off Kharg Island with US aircraft nearby, identified by TankerTrackers as NITC-linked M/T DOWNY; M/T STARK 1 struck near Jask, after strikes on SINOPA and HAWK. Iranian state TV denies DOWNY was disabled, airing footage of it intact and underway; NITC tells IRNA exports and scheduled loadings are proceeding normally.\"}"
+ },
+ "663c9134446405b46f5bb075288a531b": {
+  "input_tokens": 274,
+  "output_tokens": 154,
+  "text": "{\"summary\": \"Explosions reported on an Iranian tanker off Kharg Island, with US aircraft observed nearby; TankerTrackers identifies the vessel as NITC-linked M/T DOWNY, laden, now static with a visible heat signature on satellite AIS. Separately, M/T STARK 1 was struck near Jask, following strikes on the SINOPA and HAWK off Jask days earlier.\"}"
+ },
+ "6c5459485d33839a5cf544000f76f13a": {
+  "input_tokens": 1343,
+  "output_tokens": 310,
+  "text": "```json\n{\n  \"sub_scores\": {\n    \"event_not_commentary\": 9,\n    \"flow_impact\": 9,\n    \"primary_source\": 8,\n    \"specificity\": 9,\n    \"novelty_prior\": 6\n  },\n  \"category\": \"STRIKE_MILITARY\",\n  \"one_line\": \"CENTCOM confirms US disabled two tankers at Kharg/Jask; destroyed third in Gulf of Oman after Iranian ballistic missile attack.\",\n  \"entities\": {\n    \"vessels\": [\n      \"M/T DOWNY\",\n      \"M/T STARK 1\",\n      \"M/T KYLO\",\n      \"NOXEN\"\n    ],\n    \"locations\": [\n      \"Kharg Island\",\n      \"Jask\",\n      \"Gulf of Oman\"\n    ],\n    \"actors\": [\n      \"CENTCOM\",\n      \"US forces\",\n      \"IRGC\"\n    ]\n  },\n  \"reasoning\": \"Principal (CENTCOM) confirmation of military action directly disabling three tankers in strategically critical zones. Highly specific vessels, locations, and timeline. Directly impacts Hormuz/Kharg flows and risk premium. Confirmation elevates prior incident reports to official status.\"\n}\n```"
+ },
+ "6d2ac0bc7cb34e117b08e42515e94bee": {
+  "input_tokens": 1297,
+  "output_tokens": 275,
+  "text": "```json\n{\n  \"sub_scores\": {\n    \"event_not_commentary\": 9,\n    \"flow_impact\": 8,\n    \"primary_source\": 6,\n    \"specificity\": 8,\n    \"novelty_prior\": 7\n  },\n  \"category\": \"STRIKE_MILITARY\",\n  \"one_line\": \"Houthis attack Jazan refinery and Abha distribution centre with drones/missiles, fires reported.\",\n  \"entities\": {\n    \"vessels\": [],\n    \"locations\": [\n      \"Jazan refinery\",\n      \"Abha\",\n      \"Khamis Mushait\",\n      \"Saudi Arabia\"\n    ],\n    \"actors\": [\n      \"Houthis\",\n      \"Saudi Aramco\",\n      \"Saudi air defense\"\n    ]\n  },\n  \"reasoning\": \"New attack on Saudi refining infrastructure by Houthis. Named locations and weapon types; reports of fires confirm damage. Jazan refinery is major downstream facility. Reuters sourced adds credibility. Flow impact moderate\u2014downstream facility, not crude export chokepoint, but supply disruption risk.\"\n}\n```"
+ },
+ "6f89a03c892b60cad41d6509e7960c82": {
+  "input_tokens": 1303,
+  "output_tokens": 242,
+  "text": "```json\n{\n  \"sub_scores\": {\n    \"event_not_commentary\": 9,\n    \"flow_impact\": 8,\n    \"primary_source\": 7,\n    \"specificity\": 8,\n    \"novelty_prior\": 7\n  },\n  \"category\": \"STRIKE_MILITARY\",\n  \"one_line\": \"Houthi drones/missiles strike Saudi Aramco Jazan refinery; fires reported.\",\n  \"entities\": {\n    \"vessels\": [],\n    \"locations\": [\"Jazan refinery\", \"Abha oil distribution centre\", \"Khamis Mushait airbase\"],\n    \"actors\": [\"Houthis\", \"Saudi Aramco\", \"Saudi air defenses\"]\n  },\n  \"reasoning\": \"Material strike on critical refinery infrastructure in Saudi Arabia by Houthis. Fire at Jazan (major export facility) directly impacts crude supply and risk perception. OSINT account reporting with specific locations and visual confirmation. High flow-impact potential.\"\n}\n```"
+ },
+ "782f6ad4b3d5a9189c54ff44fe997614": {
+  "input_tokens": 1289,
+  "output_tokens": 185,
+  "text": "```json\n{\n  \"sub_scores\": {\n    \"event_not_commentary\": 1,\n    \"flow_impact\": 0,\n    \"primary_source\": 2,\n    \"specificity\": 1,\n    \"novelty_prior\": 2\n  },\n  \"category\": \"OTHER\",\n  \"one_line\": \"Newsletter recap: historical analysis of Hormuz closure risk and tanker-war framing.\",\n  \"entities\": {\n    \"vessels\": [],\n    \"locations\": [\"Strait of Hormuz\"],\n    \"actors\": []\n  },\n  \"reasoning\": \"Pure analysis/commentary: no new fact, incident, statement, or data. Historical precedent discussion and interpretive framework. No material flow event. Engagement bait for subscription.\"\n}\n```"
+ },
+ "7c8c519f573a0ee602dca042f4065ee4": {
+  "input_tokens": 1294,
+  "output_tokens": 257,
+  "text": "```json\n{\n  \"sub_scores\": {\n    \"event_not_commentary\": 9,\n    \"flow_impact\": 8,\n    \"primary_source\": 7,\n    \"specificity\": 9,\n    \"novelty_prior\": 8\n  },\n  \"category\": \"STRIKE_MILITARY\",\n  \"one_line\": \"US military strikes three Iranian oil tankers in Gulf after missile attack on Navy.\",\n  \"entities\": {\n    \"vessels\": [\"DOWNY\", \"STARK 1\", \"KYLO\"],\n    \"locations\": [\"Kharg Island\", \"Jask\", \"Gulf of Oman\"],\n    \"actors\": [\"US military\", \"US Navy\", \"Iran\"]\n  },\n  \"reasoning\": \"AP-sourced statement of US military action against Iranian tanker fleet in critical chokepoint zones. Specific vessel names, locations, and clear causal trigger (ballistic missile strike on Navy). Direct flow impact: three tankers damaged/disabled near Hormuz/Kharg infrastructure. High novelty if genuine new AP wire breaking this date.\"\n}\n```"
+ },
+ "8ab027b1397157c256d2cfac5433c39e": {
+  "input_tokens": 293,
+  "output_tokens": 179,
+  "text": "{\"summary\": \"CENTCOM has confirmed the strikes, citing an IRGC ballistic missile attack on a US carrier, and reported a third tanker, KYLO, destroyed in the Gulf of Oman. Earlier: explosions on an Iranian tanker off Kharg Island with US aircraft nearby, identified by TankerTrackers as NITC-linked M/T DOWNY, laden and static with a heat signature; M/T STARK 1 struck near Jask, after strikes on SINOPA and HAWK.\"}"
+ },
+ "980f68c0b4b638bbb7110d150cecd270": {
+  "input_tokens": 992,
+  "output_tokens": 117,
+  "text": "{\"decision\":\"UPDATE\",\"event_id\":1,\"what_changed\":\"Iran officially denies DOWNY was disabled, airs footage of vessel intact; NITC says Kharg exports and loadings proceeding normally.\",\"reasoning\":\"Official Iranian denial contradicts reported strike damage, a material change to the event picture not in the summary.\"}"
+ },
+ "9cb9734329319806201b2d76ce1c149f": {
+  "input_tokens": 803,
+  "output_tokens": 69,
+  "text": "{\"decision\":\"DUPLICATE\",\"event_id\":1,\"what_changed\":\"\",\"reasoning\":\"Post restates the same IRGC warning already captured; wire service pickup adds no material change to the picture.\"}"
+ },
+ "9cf25bfcd9fe3fa636078fbaa7a87793": {
+  "input_tokens": 249,
+  "output_tokens": 137,
+  "text": "{\"summary\": \"Houthi drones/missiles struck Saudi Aramco's Jazan refinery, sparking fires. Saudi Arabia's energy ministry has now officially confirmed the attack caused a fire in a crude processing unit, which has been brought under control, with no casualties reported. Refinery output is partially reduced while damage is assessed \u2014 the first official confirmation of unit-level damage at the facility.\"}"
+ },
+ "9da13ae8a80b866c6c08563e185bdbd7": {
+  "input_tokens": 299,
+  "output_tokens": 153,
+  "text": "{\"summary\": \"Two VLCCs struck by projectiles exiting Hormuz. UKMTO Incident 031-26 confirms SENEGAL PROSPERITY was hit on the port side, damaging the engine room and ballast tank, 17NM east of Khasab, Oman. The vessel is disabled, listing, not under command and at anchor near the Omani coast; crew evacuated by local authorities and all accounted for. Vessels advised caution.\"}"
+ },
+ "a6b63f448b1dca0fbc99ca7cf76d862c": {
+  "input_tokens": 1803,
+  "output_tokens": 208,
+  "text": "{\"sub_scores\": {\"event_not_commentary\": 9, \"flow_impact\": 7, \"primary_source\": 6, \"specificity\": 8, \"novelty_prior\": 7}, \"category\": \"OFFICIAL_STATEMENT\", \"one_line\": \"Saudi ministry confirms Jazan refinery crude unit fire, output partially reduced\", \"entities\": {\"vessels\": [], \"locations\": [\"Jazan\"], \"actors\": [\"Saudi energy ministry\"]}, \"reasoning\": \"Official confirmation of unit-level damage at Jazan refinery with partial output reduction; material to Saudi product flows.\"}"
+ },
+ "a6cd6e679f6e1da85f9bfcdb549471dd": {
+  "input_tokens": 1014,
+  "output_tokens": 69,
+  "text": "{\"decision\":\"DUPLICATE\",\"event_id\":1,\"what_changed\":\"\",\"reasoning\":\"AP wire restates the three named tankers and missile-attack cause already in the event summary; no new facts.\"}"
+ },
+ "afcd186a74a660feaafd3624af6ac860": {
+  "input_tokens": 1280,
+  "output_tokens": 257,
+  "text": "```json\n{\n  \"sub_scores\": {\n    \"event_not_commentary\": 8,\n    \"flow_impact\": 7,\n    \"primary_source\": 6,\n    \"specificity\": 7,\n    \"novelty_prior\": 6\n  },\n  \"category\": \"OFFICIAL_STATEMENT\",\n  \"one_line\": \"IRGC Navy warns tanker crews at Kuwaiti, Bahraini ports to evacuate citing US hostile actions.\",\n  \"entities\": {\n    \"vessels\": [\"tankers at Kuwaiti and Bahraini ports\"],\n    \"locations\": [\"Kuwait\", \"Bahrain\", \"Hormuz region\"],\n    \"actors\": [\"IRGC Navy\", \"US military\"]\n  },\n  \"reasoning\": \"IRGC statement to maritime actors is a material principal action that signals escalation risk and could trigger evacuations affecting regional tanker movements. Wire-carried warning increases credibility. Specificity moderate\u2014ports named but no vessel identities. Novelty depends on prior warnings; escalation tone suggests some freshness.\"\n}\n```"
+ },
+ "b3277aedba6da8efcf1ad8e7b40add81": {
+  "input_tokens": 1796,
+  "output_tokens": 226,
+  "text": "{\"sub_scores\":{\"event_not_commentary\":8,\"flow_impact\":9,\"primary_source\":3,\"specificity\":6,\"novelty_prior\":6},\"category\":\"OFFICIAL_STATEMENT\",\"one_line\":\"IRGC Navy warns tanker crews at Kuwaiti, Bahraini ports to evacuate vessels\",\"entities\":{\"vessels\":[],\"locations\":[\"Kuwait\",\"Bahrain\",\"Persian Gulf\"],\"actors\":[\"IRGC Navy\",\"US military\"]},\"reasoning\":\"Principal's warning to tankers in Gulf ports directly threatens loadings; re-post of wire coverage lowers primary-source score.\"}"
+ },
+ "b3d33136a7a8494584cc3cd615945ad0": {
+  "input_tokens": 824,
+  "output_tokens": 166,
+  "text": "{\"decision\":\"UPDATE\",\"event_id\":1,\"what_changed\":\"Tanker identified as NITC-linked M/T DOWNY, laden, static with heat signature; second vessel STARK 1 struck near Jask\",\"reasoning\":\"Candidate event covered unspecified tanker off Kharg; post names vessel and adds a second strike, materially updating the picture rather than restating it.\"}"
+ },
+ "b4aab60f394f205b8a3ee3127ddd548d": {
+  "input_tokens": 1289,
+  "output_tokens": 285,
+  "text": "```json\n{\n  \"sub_scores\": {\n    \"event_not_commentary\": 8,\n    \"flow_impact\": 9,\n    \"primary_source\": 7,\n    \"specificity\": 8,\n    \"novelty_prior\": 6\n  },\n  \"category\": \"SUPPLY_DATA\",\n  \"one_line\": \"Saudi August crude exports fell to 20-year low of 3.4 mbpd; Petroline outage, Red Sea closure cited.\",\n  \"entities\": {\n    \"vessels\": [],\n    \"locations\": [\n      \"Saudi Arabia\",\n      \"Eastern terminals\",\n      \"Red Sea\",\n      \"Petroline\"\n    ],\n    \"actors\": [\n      \"Saudi Arabia\"\n    ]\n  },\n  \"reasoning\": \"Newly published aggregate export data (August figures released early September) is inherently an event. Tanker-tracking primary source. High flow impact: 41% m/m decline at major supplier directly affects Hormuz/chokepoint risk perception. Specificity strong (mbpd, terminal names, attribution). Novelty moderate\u2014Petroline outage and Red Sea closure already known, but August aggregate data is new.\"\n}\n```"
+ },
+ "c7867c8a256019b4f4d7120d99121182": {
+  "input_tokens": 1791,
+  "output_tokens": 218,
+  "text": "{\"sub_scores\":{\"event_not_commentary\":8,\"flow_impact\":7,\"primary_source\":5,\"specificity\":7,\"novelty_prior\":6},\"category\":\"OFFICIAL_STATEMENT\",\"one_line\":\"Iranian state TV, NITC deny tanker DOWNY disabled; say Kharg exports normal\",\"entities\":{\"vessels\":[\"DOWNY\"],\"locations\":[\"Kharg Island\"],\"actors\":[\"Iranian state TV\",\"NITC\"]},\"reasoning\":\"Official denial of a reported tanker incident at Kharg; inherits flow_impact of disputed export disruption. Footage ungeolocated.\"}"
+ },
+ "cad28b779b32708ee5074b958423161f": {
+  "input_tokens": 363,
+  "output_tokens": 219,
+  "text": "{\"summary\": \"Two VLCCs struck by projectiles exiting Hormuz. UKMTO Incident 031-26 confirms SENEGAL PROSPERITY was hit on the port side, damaging the engine room and ballast tank, 17NM east of Khasab, Oman. The vessel is disabled, listing, not under command and at anchor near the Omani coast; crew evacuated, all accounted for. Iran's UN mission denies involvement in the SIDR and SENEGAL PROSPERITY strikes, calling reports fabrications justifying aggression; IRGC-linked Tasnim echoes the denial. Vessels advised caution.\"}"
+ },
+ "cc2050e16fc28384ad3bdd739297b973": {
+  "input_tokens": 1311,
+  "output_tokens": 234,
+  "text": "```json\n{\n  \"sub_scores\": {\n    \"event_not_commentary\": 9,\n    \"flow_impact\": 7,\n    \"primary_source\": 9,\n    \"specificity\": 9,\n    \"novelty_prior\": 8\n  },\n  \"category\": \"SHIPPING_INCIDENT\",\n  \"one_line\": \"Vessel SENEGAL PROSPERITY struck, disabled near Khasab; crew evacuated safely.\",\n  \"entities\": {\n    \"vessels\": [\"SENEGAL PROSPERITY\"],\n    \"locations\": [\"17NM east of Khasab, Oman\", \"Gulf of Oman\"],\n    \"actors\": [\"UK_MTO\", \"Omani authorities\"]\n  },\n  \"reasoning\": \"Factual incident report from official maritime tracking authority. Disabled vessel near Khasab affects chokepoint transit risk and vessel movements. Specific time, location, damage state, crew status. High materiality for shipping risk assessment.\"\n}\n```"
+ },
+ "daac0651aafbb232558de0c6480aa886": {
+  "input_tokens": 1276,
   "output_tokens": 209,
-  "text": "{\"summary\": \"Two VLCCs struck by projectiles exiting Hormuz. UKMTO Incident 031-26 confirms Senegal Prosperity was hit on the port side, damaging the engine room and ballast tank, 17NM east of Khasab, Oman; the listing vessel is not under command and at anchor near the Omani coast, crew evacuated and all accounted for. Iran's UN mission denies involvement in the Sidr and Senegal Prosperity strikes, calling reports fabrications to justify aggression; IRGC-linked Tasnim echoes the denial. Nearby vessels advised caution.\"}"
+  "text": "```json\n{\n  \"sub_scores\": {\n    \"event_not_commentary\": 2,\n    \"flow_impact\": 0,\n    \"primary_source\": 8,\n    \"specificity\": 8,\n    \"novelty_prior\": 1\n  },\n  \"category\": \"OTHER\",\n  \"one_line\": \"Historical satellite imagery of tanker at Kharg Island from June 2026.\",\n  \"entities\": {\n    \"vessels\": [\"M/T LAUREN II\"],\n    \"locations\": [\"Kharg Island\", \"Azarpad jetty\"],\n    \"actors\": []\n  },\n  \"reasoning\": \"Post-dated archival image (June 20, posted Sept 12 = ~84 days old). Primary source (satellite), specific (vessel/location/date), but historical documentation, not a new event. No current flow impact.\"\n}\n```"
  },
- "bad6947402a94e8d4bb6a5bf7dbae413": {
-  "input_tokens": 776,
-  "output_tokens": 115,
-  "text": "{\"decision\":\"UPDATE\",\"event_id\":1,\"what_changed\":\"Official Saudi ministry confirmation: crude unit fire contained, no casualties, output partially reduced pending damage assessment\",\"reasoning\":\"First official source confirming unit-level damage and no casualties, beyond the candidate's unattributed 'large fire reported'.\"}"
+ "e9389993c8f56d04b09e123b73710584": {
+  "input_tokens": 1024,
+  "output_tokens": 101,
+  "text": "{\"decision\":\"UPDATE\",\"event_id\":1,\"what_changed\":\"Iran's UN mission publicly denies involvement in the strikes; IRGC-linked Tasnim echoes denial.\",\"reasoning\":\"Official attribution denial adds new actor-response dimension not present in the incident summary.\"}"
  },
- "d3dff46d8e4e21b086bc1c2631ce9bbd": {
-  "input_tokens": 1593,
-  "output_tokens": 222,
-  "text": "{\"sub_scores\": {\"event_not_commentary\": 9, \"flow_impact\": 7, \"primary_source\": 5, \"specificity\": 8, \"novelty_prior\": 7}, \"category\": \"OFFICIAL_STATEMENT\", \"one_line\": \"Saudi ministry confirms Jazan refinery unit fire, output partially reduced after attack\", \"entities\": {\"vessels\": [], \"locations\": [\"Jazan\", \"Saudi Arabia\"], \"actors\": [\"Saudi energy ministry\"]}, \"reasoning\": \"Official confirmation of unit-level damage at Jazan refinery with partial output reduction; directly affects product flows and risk premium.\"}"
+ "f3553b870b1287ae8091ab46493d2075": {
+  "input_tokens": 1258,
+  "output_tokens": 176,
+  "text": "```json\n{\n  \"sub_scores\": {\n    \"event_not_commentary\": 2,\n    \"flow_impact\": 0,\n    \"primary_source\": 0,\n    \"specificity\": 0,\n    \"novelty_prior\": 2\n  },\n  \"category\": \"OTHER\",\n  \"one_line\": \"Humorous post about missing overnight shipping developments; no substantive content.\",\n  \"entities\": {\n    \"vessels\": [],\n    \"locations\": [],\n    \"actors\": []\n  },\n  \"reasoning\": \"Pure commentary/meme. No new facts, named events, or flows cited. Vague meta-reference to unspecified overnight activity. No actionable information for flow risk assessment.\"\n}\n```"
  },
- "d6fc021b4926fbcaa5d40193740ffa6b": {
-  "input_tokens": 1138,
-  "output_tokens": 269,
-  "text": "```json\n{\n  \"sub_scores\": {\n    \"event_not_commentary\": 9,\n    \"flow_impact\": 8,\n    \"primary_source\": 7,\n    \"specificity\": 8,\n    \"novelty_prior\": 7\n  },\n  \"category\": \"STRIKE_MILITARY\",\n  \"one_line\": \"Houthis attacked Saudi Aramco Jazan refinery with drones/missiles; large fire reported.\",\n  \"entities\": {\n    \"vessels\": [],\n    \"locations\": [\n      \"Jazan refinery\",\n      \"Abha oil distribution centre\",\n      \"Khamis Mushait\"\n    ],\n    \"actors\": [\n      \"Houthis\",\n      \"Saudi Aramco\",\n      \"Saudi air defense\"\n    ]\n  },\n  \"reasoning\": \"Material strike on critical Saudi refinery infrastructure by Houthis. Jazan is ~400k bbl/d capacity; fire damage could reduce exports. Reuters attribution adds credibility. Specificity good (named locations, asset types). Flow impact significant if refinery output disrupted.\"\n}\n```"
- },
- "da0fc0588dfbc9c4c4e13b5d23f00dd9": {
-  "input_tokens": 1152,
-  "output_tokens": 251,
-  "text": "```json\n{\n  \"sub_scores\": {\n    \"event_not_commentary\": 9,\n    \"flow_impact\": 7,\n    \"primary_source\": 9,\n    \"specificity\": 9,\n    \"novelty_prior\": 7\n  },\n  \"category\": \"SHIPPING_INCIDENT\",\n  \"one_line\": \"Vessel SENEGAL PROSPERITY struck near Khasab, Oman; disabled, crew evacuated safely.\",\n  \"entities\": {\n    \"vessels\": [\"SENEGAL PROSPERITY\"],\n    \"locations\": [\"Khasab, Oman\", \"Gulf of Oman\", \"17NM east of Khasab\"],\n    \"actors\": [\"UK_MTO\", \"Omani authorities\"]\n  },\n  \"reasoning\": \"Official maritime authority reports disabled vessel near critical chokepoint. Strike damage to engine room and ballast tank creates imminent risk of wreck obstruction in Gulf of Oman transit corridor. Crew safety confirmed; incident scope and recovery timeline unknown but pose temporary flow risk.\"\n}\n```"
- },
- "ddcb6df409a7c6eadaa060f73af686bf": {
-  "input_tokens": 1124,
-  "output_tokens": 189,
-  "text": "```json\n{\n  \"sub_scores\": {\n    \"event_not_commentary\": 2,\n    \"flow_impact\": 1,\n    \"primary_source\": 3,\n    \"specificity\": 2,\n    \"novelty_prior\": 2\n  },\n  \"category\": \"OTHER\",\n  \"one_line\": \"Analyst charts crude positioning, CTAs long, dealers short gamma, backwardation fatigue.\",\n  \"entities\": {\n    \"vessels\": [],\n    \"locations\": [],\n    \"actors\": [\"CTAs\", \"dealers\"]\n  },\n  \"reasoning\": \"Pure technical/positioning analysis with no new physical event, flow disruption, or principal statement. Market commentary on financial positioning does not move barrels. Speculative thread, not material to crude flows.\"\n}\n```"
- },
- "f2c6495b647e4547b3fe679b44096fa3": {
-  "input_tokens": 819,
-  "output_tokens": 76,
-  "text": "{\"decision\": \"DUPLICATE\", \"event_id\": 1, \"what_changed\": \"\", \"reasoning\": \"Same attack, same locations and details already in candidate summary/entities; no new facts beyond Reuters attribution.\"}"
- },
- "f3fb8c3f85e8ff1a9955c0d4c3f1655b": {
-  "input_tokens": 1184,
-  "output_tokens": 305,
-  "text": "```json\n{\n  \"sub_scores\": {\n    \"event_not_commentary\": 9,\n    \"flow_impact\": 9,\n    \"primary_source\": 8,\n    \"specificity\": 9,\n    \"novelty_prior\": 3\n  },\n  \"category\": \"STRIKE_MILITARY\",\n  \"one_line\": \"CENTCOM confirms US disabled two tankers at Kharg/Jask, destroyed third in Gulf of Oman.\",\n  \"entities\": {\n    \"vessels\": [\n      \"M/T DOWNY\",\n      \"M/T STARK 1\",\n      \"M/T KYLO\",\n      \"NOXEN\"\n    ],\n    \"locations\": [\n      \"Kharg Island\",\n      \"Jask\",\n      \"Gulf of Oman\"\n    ],\n    \"actors\": [\n      \"US Central Command\",\n      \"US forces\",\n      \"IRGC\"\n    ]\n  },\n  \"reasoning\": \"Official CENTCOM statement confirming destruction of three tankers and retaliatory action against IRGC ballistic missile launches. Major flow-disrupting event at critical chokepoint; however, novelty_prior low because incident was likely already reported. Confirmation adds risk clarity.\"\n}\n```"
- },
- "f6c1ac2e3a91827b3248fe1a9a1555aa": {
-  "input_tokens": 1126,
-  "output_tokens": 205,
-  "text": "```json\n{\n  \"sub_scores\": {\n    \"event_not_commentary\": 9,\n    \"flow_impact\": 7,\n    \"primary_source\": 7,\n    \"specificity\": 8,\n    \"novelty_prior\": 6\n  },\n  \"category\": \"OFFICIAL_STATEMENT\",\n  \"one_line\": \"Saudi energy ministry confirms Jazan refinery crude unit fire; output partially reduced pending damage assessment.\",\n  \"entities\": {\n    \"vessels\": [],\n    \"locations\": [\"Jazan refinery\"],\n    \"actors\": [\"Saudi Arabia energy ministry\"]\n  },\n  \"reasoning\": \"Official confirmation of infrastructure damage at critical Saudi export hub. Quantifies impact (partial reduction, unit-level specifics) vs. earlier vague reports. Flow risk material even if temporary; affects export timing and potentially global crude availability.\"\n}\n```"
- },
- "f833f17e1e302a21973f511e36a3e753": {
-  "input_tokens": 300,
-  "output_tokens": 147,
-  "text": "{\"summary\": \"Two VLCCs struck by projectiles exiting Hormuz. UKMTO Incident 031-26 confirms Senegal Prosperity was hit on the port side, damaging the engine room and ballast tank, 17NM east of Khasab, Oman; the listing vessel is not under command and at anchor near the Omani coast, crew evacuated by local authorities and all accounted for. Nearby vessels advised caution.\"}"
+ "fc64b6a6f85c7e9d7bde9235188e6fbd": {
+  "input_tokens": 1283,
+  "output_tokens": 168,
+  "text": "```json\n{\n  \"sub_scores\": {\n    \"event_not_commentary\": 2,\n    \"flow_impact\": 1,\n    \"primary_source\": 5,\n    \"specificity\": 3,\n    \"novelty_prior\": 2\n  },\n  \"category\": \"OTHER\",\n  \"one_line\": \"Technical analyst shares positioning charts and market outlook.\",\n  \"entities\": {\n    \"vessels\": [],\n    \"locations\": [],\n    \"actors\": []\n  },\n  \"reasoning\": \"Pure market commentary/technical analysis on futures positioning and curve structure. No new fact, infrastructure change, statement by principal, or flow-altering event. Not a materiality signal.\"\n}\n```"
  }
 }

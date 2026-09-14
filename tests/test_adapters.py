@@ -124,10 +124,14 @@ def test_x_push_rule_matched_event_parsed():
             {"id": "556", "text": "reply text", "isReply": True,
              "author": {"id": "1", "userName": "UK_MTO"},
              "createdAt": "Thu Sep 10 11:23:00 +0000 2026"},
+            {"id": "557", "text": "RT @someone: original text",
+             "retweeted_tweet": {"id": "500"},
+             "author": {"id": "1", "userName": "UK_MTO"},
+             "createdAt": "Thu Sep 10 11:24:00 +0000 2026"},
         ],
     }
     posts = parse_ws_message(msg, ALLOWED, received_at=NOW)
-    assert len(posts) == 1  # reply dropped
+    assert len(posts) == 1  # reply and pure retweet dropped
     p = posts[0]
     assert (p.account_id, p.account_handle) == ("717836935", "UK_MTO")
     assert p.quoted_text == "original advisory"
@@ -177,6 +181,20 @@ async def test_sync_never_updates_an_active_up_to_date_rule(settings, repo):
     assert calls == [("GET", "/oapi/tweet_filter/get_rules")]
 
 
+async def test_sync_deactivates_active_rule_before_changing_it(settings, repo):
+    # Changing the account list changes the rule value; an active rule must be
+    # deactivated (accepted by the vendor) before the update is applied.
+    handles = [a.handle for a in settings.accounts if a.source == "x"]
+    calls = []
+    existing = [{"rule_id": "r1", "tag": "newsstream-0", "value": "from:OldAccount",
+                 "interval_seconds": settings.x_push_interval, "is_effect": 1}]
+    async with _rules_transport(settings, calls, existing) as rest:
+        await XPushAdapter(settings, repo)._sync_rules(rest, handles)
+    assert calls == [("GET", "/oapi/tweet_filter/get_rules"),
+                     ("POST", "/oapi/tweet_filter/update_rule"),   # is_effect=0, old value
+                     ("POST", "/oapi/tweet_filter/update_rule")]   # new value, is_effect=1
+
+
 async def test_sync_activates_inactive_rule(settings, repo):
     handles = [a.handle for a in settings.accounts if a.source == "x"]
     value = build_rule_values(handles)[0]
@@ -186,6 +204,56 @@ async def test_sync_activates_inactive_rule(settings, repo):
     async with _rules_transport(settings, calls, existing) as rest:
         await XPushAdapter(settings, repo)._sync_rules(rest, handles)
     assert ("POST", "/oapi/tweet_filter/update_rule") in calls
+
+
+async def test_poll_once_queries_search_and_advances_since(settings, repo):
+    # REST fallback when the vendor rejects the WebSocket (403, 2026-09-11).
+    seen_queries = []
+    def handler(request):
+        seen_queries.append(dict(request.url.params))
+        return httpx.Response(200, json={"has_next_page": False, "next_cursor": "", "tweets": [
+            {"id": "901", "text": "tanker update", "createdAt": "Thu Sep 11 06:00:00 +0000 2026",
+             "author": {"id": "717836935", "userName": "UK_MTO"}}]})
+    adapter = XPushAdapter(settings, repo)
+    async with httpx.AsyncClient(transport=httpx.MockTransport(handler),
+                                 base_url="https://api.twitterapi.io") as rest:
+        posts, new_since = await adapter._poll_once(rest, ["from:UK_MTO"], 1000, {"uk_mto"})
+    assert seen_queries[0]["query"] == "(from:UK_MTO) since_time:1000"
+    assert seen_queries[0]["queryType"] == "Latest"
+    assert [p.source_post_id for p in posts] == ["901"]
+    assert new_since > 1000  # advances to cycle start minus overlap
+
+
+async def test_backfill_pages_until_cutoff(settings, repo):
+    # The refetch button pages each timeline back N hours; paging must stop
+    # once a page reaches posts older than the cutoff.
+    from datetime import timedelta
+    now = datetime.now(UTC)
+    fmt = "%a %b %d %H:%M:%S +0000 %Y"
+    def tw(tid, age_h):
+        return {"id": tid, "text": f"post {tid}",
+                "createdAt": (now - timedelta(hours=age_h)).strftime(fmt),
+                "author": {"id": "717836935", "userName": "UK_MTO"}}
+    pages = {
+        "": {"tweets": [tw("300", 1), tw("299", 5)], "has_next_page": True, "next_cursor": "c2"},
+        "c2": {"tweets": [tw("298", 9), tw("297", 20)], "has_next_page": True, "next_cursor": "c3"},
+        "c3": {"tweets": [tw("296", 30)], "has_next_page": True, "next_cursor": "c4"},
+    }
+    calls = []
+    def handler(request):
+        cursor = request.url.params.get("cursor", "")
+        calls.append(cursor)
+        return httpx.Response(200, json=pages[cursor])
+    got = []
+    async def sink(p): got.append(p.source_post_id)
+    adapter = XPushAdapter(settings, repo)
+    async with httpx.AsyncClient(transport=httpx.MockTransport(handler),
+                                 base_url="https://api.twitterapi.io") as rest:
+        pushed = await adapter._backfill(rest, ["UK_MTO"], {"uk_mto"}, sink,
+                                         hours=12, max_pages=6)
+    assert got == ["300", "299", "298"]   # the 20h and 30h posts are beyond the window
+    assert pushed == 3
+    assert calls == ["", "c2"]            # stopped paging at the page that crossed the cutoff
 
 
 def test_x_push_rule_values_chunked_under_limit():

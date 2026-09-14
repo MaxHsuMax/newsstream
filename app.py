@@ -141,11 +141,23 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             "llm_spend_today": round(spend, 2),
             "llm_fail_open": llm.fail_open,
             "x_reads_today": await repo.x_reads_today(),
+            "refetch_running": x_push.refetch_running,
             "x_daily_read_budget": settings.x_daily_read_budget,
             "threshold": settings.market.threshold,
             "max_stacked": settings.ui_max_stacked,
             "inactive_accounts": inactive,
         }
+
+    @app.post("/refetch")
+    async def refetch(hours: float = 12):
+        """Re-pull every account's recent posts (UI catch-up button)."""
+        hours = max(1.0, min(48.0, hours))
+        if not settings.x_push_api_key:
+            raise HTTPException(409, "x_push is not configured")
+        if x_push.refetch_running:
+            raise HTTPException(409, "refetch already running")
+        asyncio.create_task(x_push.refetch(pipeline.sink, hours))
+        return {"started": True, "hours": hours}
 
     @app.post("/ingest")
     async def ingest(body: dict):
@@ -179,7 +191,11 @@ def main() -> None:
     logging.basicConfig(level=level, format="%(asctime)s %(levelname)-7s %(name)s | %(message)s")
     logging.getLogger("httpx").setLevel(logging.WARNING)
     settings = load_settings()
-    uvicorn.run(create_app(settings), host=settings.host, port=settings.port, log_level="warning")
+    # timeout_graceful_shutdown: open SSE streams never finish on their own;
+    # without this cap a SIGTERM'd server waits on them forever and zombies
+    # (holding the DB and the vendor's one-WS-per-key slot; seen 2026-09-11).
+    uvicorn.run(create_app(settings), host=settings.host, port=settings.port,
+                log_level="warning", timeout_graceful_shutdown=5)
 
 
 if __name__ == "__main__":

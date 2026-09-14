@@ -96,6 +96,30 @@ async def test_stale_events_leave_candidate_pool(settings, repo):
     assert (await repo.get_event(eid))["status"] == "stale"
 
 
+async def test_feed_sorted_by_origin_post_recency(settings, repo):
+    from datetime import datetime, UTC
+    from .conftest import load_fixture
+
+    older, newer = load_fixture("khasab_vlcc")[0][0], load_fixture("kharg_strikes")[0][0]
+    id_old = await repo.insert_post(older)   # posted Aug 31
+    id_new = await repo.insert_post(newer)   # posted Sep 5
+    ev_old = await repo.create_event("SHIPPING_INCIDENT", "old story", "s", {})
+    ev_new = await repo.create_event("STRIKE_MILITARY", "new story", "s", {})
+    await repo.link_event_post(ev_old, id_old, "origin")
+    await repo.link_event_post(ev_new, id_new, "origin")
+    # Update the OLD story so last_updated_at would sort it first...
+    await repo.update_event(ev_old, "updated summary")
+    feed = await repo.feed()
+    # ...but the feed must order by origin post recency instead.
+    assert [e["title"] for e in feed] == ["new story", "old story"]
+
+    # A stale event sinks below ALL open events, even with the newest origin.
+    await repo.db.execute("UPDATE events SET status = 'stale' WHERE id = ?", (ev_new,))
+    await repo.db.commit()
+    feed = await repo.feed()
+    assert [e["title"] for e in feed] == ["old story", "new story"]
+
+
 # ---------------- cassette/live: fixture sequences replay in order ----------------
 
 @requires_llm

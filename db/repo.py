@@ -37,6 +37,7 @@ class Repo:
         self.db_path.parent.mkdir(parents=True, exist_ok=True)
         self._db = await aiosqlite.connect(self.db_path)
         self._db.row_factory = aiosqlite.Row
+        await self._db.execute("PRAGMA busy_timeout = 5000")
         await self._db.executescript(SCHEMA)
         await self._db.commit()
 
@@ -242,9 +243,19 @@ class Repo:
     # -- UI queries -----------------------------------------------------------
 
     async def feed(self, limit: int = 100) -> list[dict]:
-        """Events (newest first) with their surfaced posts nested."""
+        """Events with surfaced posts nested. Active (open) events first,
+        stale ones below them regardless of age; within each group, newest
+        origin post first (the story is as recent as the tweet that first
+        created it)."""
         events = await (await self.db.execute(
-            "SELECT * FROM events ORDER BY last_updated_at DESC LIMIT ?", (limit,),
+            """SELECT e.*, COALESCE(
+                     (SELECT MIN(p.posted_at) FROM event_posts ep
+                      JOIN posts p ON p.id = ep.post_id
+                      WHERE ep.event_id = e.id AND ep.role = 'origin'),
+                     e.first_seen_at) AS origin_posted_at
+               FROM events e
+               ORDER BY (e.status != 'open'), origin_posted_at DESC LIMIT ?""",
+            (limit,),
         )).fetchall()
         out = []
         for ev in events:

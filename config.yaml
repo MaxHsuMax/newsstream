@@ -38,6 +38,15 @@ accounts:
   - handle: MenchOsint
     source: x
     tier: osint
+  - handle: CRUDEOIL231
+    source: x
+    tier: osint
+  - handle: HFI_Research
+    source: x
+    tier: osint
+  - handle: financialjuice
+    source: x
+    tier: osint
 
 # OPEN (CLAUDE.md §14): the user supplies the Telegram channel usernames that
 # mirror the seed accounts. Entries may be a bare username string (tier

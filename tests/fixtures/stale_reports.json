@@ -1,0 +1,32 @@
+{
+  "event": "stale_reports",
+  "description": "Date-awareness cases (prompt v3): old-dated documentation must suppress; newly published aggregate stats must surface. Modeled on a live misclassification 2026-09-12 (LAUREN II / June 20 imagery surfaced as an event).",
+  "posts": [
+    {
+      "source": "x",
+      "source_post_id": "9006000001",
+      "account_id": "89234502",
+      "account_handle": "TankerTrackers",
+      "tier": "tracker",
+      "url": "https://x.com/TankerTrackers/status/9006000001",
+      "text": "M/T LAUREN II loading crude at Kharg Island's Azarpad jetty, June 20, 2026. One of the last laden departures we imaged before the strikes began.",
+      "quoted_text": null,
+      "is_reply": false,
+      "posted_at": "2026-09-12T20:37:00+00:00",
+      "expect": {"surfaced": false, "dedup": null, "max_score": 49, "category_in": ["OTHER", "SHIPPING_INCIDENT", "SUPPLY_DATA", "INFRASTRUCTURE"]}
+    },
+    {
+      "source": "x",
+      "source_post_id": "9006000002",
+      "account_id": "4337909658",
+      "account_handle": "HFI_Research",
+      "tier": "osint",
+      "url": "https://x.com/HFI_Research/status/9006000002",
+      "text": "Saudi Arabia's August crude exports hit a 20-year low of 3.4 mbpd per tanker-tracking data, down 41% m/m, as eastern terminals absorb the Petroline outage and Red Sea loadings stay shut.",
+      "quoted_text": null,
+      "is_reply": false,
+      "posted_at": "2026-09-12T14:05:00+00:00",
+      "expect": {"surfaced": true, "dedup": "NEW_EVENT", "category_in": ["SUPPLY_DATA"]}
+    }
+  ]
+}

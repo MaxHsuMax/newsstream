@@ -40,7 +40,15 @@ requires_llm = pytest.mark.skipif(
 
 @pytest.fixture
 def settings(tmp_path):
-    return load_settings(config_path=ROOT / "config.yaml", db_path=tmp_path / "test.db")
+    """Real config, but with the market threshold pinned to the spec default:
+    fixture expectations (and recorded cassettes) are calibrated to 70, and
+    the user tuning config.yaml must not break the suite."""
+    import dataclasses
+
+    s = load_settings(config_path=ROOT / "config.yaml", db_path=tmp_path / "test.db")
+    return dataclasses.replace(
+        s, market=dataclasses.replace(s.market, threshold=70, review_band=8)
+    )
 
 
 @pytest.fixture
